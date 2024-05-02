@@ -6,7 +6,6 @@ app.use(express.json());
 
 const chatRoutes = require('./routes/chatRoutes.cjs');
 
-
 app.use('/api', chatRoutes);
 
 const port = 5000;
