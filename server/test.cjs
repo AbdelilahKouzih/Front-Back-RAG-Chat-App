@@ -1,54 +1,69 @@
-var fs = require("fs");
-var path = require("path");
+const express = require('express');
+const fs = require('fs');
+const {
+  FunctionDeclarationSchemaType,
+  HarmBlockThreshold,
+  HarmCategory,
+  VertexAI
+} = require('@google-cloud/vertexai');
 
-var express = require("express");
-var chroma = require("chromadb");
+const app = express();
+const port = 3000;
+const apikeygc="AIzaSyDMljRU_6bd5pdxaUPwTtmprTzodKgoUd4";
+const project = 'chat-bot-rag';
+const location = 'us-central1';
+const textModel = 'gemini-1.0-pro';
 
-var app = express();
-app.get("/", async (req, res) => {
-  const cc = new chroma.ChromaClient({ path: "http://localhost:8080" });
-  await cc.reset();
+const vertexAI = new VertexAI({ project: project, location: location });
 
-  const google = new chroma.GoogleGenerativeAiEmbeddingFunction({
-    googleApiKey: "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4",
-  });
-
-  const collection = await cc.createCollection({
-    name: "test-from-js",
-    embeddingFunction: google,
-  });
-
-  await collection.add({
-    ids: ["doc1", "doc2"],
-    documents: ["doc1", "doc2"],
-  });
-
-  let count = await collection.count();
-  console.log("count", count);
-
-  const googleQuery = new chroma.GoogleGenerativeAiEmbeddingFunction({
-    googleApiKey: "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4",
-    taskType: "RETRIEVAL_QUERY",
-  });
-
-  const queryCollection = await cc.getCollection({
-    name: "test-from-js",
-    embeddingFunction: googleQuery,
-  });
-
-  const query = await collection.query({
-    queryTexts: ["doc1"],
-    nResults: 1,
-  });
-  console.log("query", query);
-
-  console.log("COMPLETED");
-
-  const collections = await cc.listCollections();
-  console.log("collections", collections);
-
-  res.send("Hello World!");
+const generativeModel = vertexAI.getGenerativeModel({
+  model: textModel,
+  safetySettings: [{ category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE }],
+  generationConfig: { maxOutputTokens: 256 },
 });
-app.listen(3000, function () {
-  console.log("Example app listening on port 3000!");
+
+const input= "c'est quoi antigone ?";
+
+app.get('/', (req, res) => {
+  // Lire le contenu du fichier data.txt
+  fs.readFile('data.txt', 'utf8', async (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      res.status(500).send("Error reading file");
+      return;
+    }
+
+    try {
+      // Utiliser le contenu lu comme entrée pour la fonction
+      const metadata = await generateContentWithVertexAISearchGrounding(data);
+      res.json(metadata);
+    } catch (error) {
+      console.error("Error generating content:", error);
+      res.status(500).send("Error generating content");
+    }
+  });
+});
+
+async function generateContentWithVertexAISearchGrounding(data) {
+  const result = await generativeModel.generateContent({
+    contents: [{ role: 'user', parts: [{ text: "definir antigone" }] }],
+    tools: [{
+      retrieval: {
+        vertexAiSearch: {
+          datastore: data,
+        },
+        disableAttribution: false,
+      },
+    }],
+  });
+  const response = result.response;
+  const groundingMetadata = response.candidates[0].groundingMetadata;
+  console.log("Grounding metadata is: ", JSON.stringify(groundingMetadata));
+  return groundingMetadata;
+}
+
+
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
 });
