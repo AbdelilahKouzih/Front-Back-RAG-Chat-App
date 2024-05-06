@@ -2,15 +2,17 @@ const fs = require('fs');
 const PDFExtract = require('pdf.js-extract').PDFExtract;
 const chroma = require("chromadb"); // Import du module chromadb
 const { log } = require('console');
-const setupDataAndVectorStoreOnce = require('rag-chatbot');
-const userQueryWithConversationChain = require('rag-chatbot');
+const { OpenAI } = require("openai");
+const path = require('path');
 
+const openaiKey = 'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
+const openai = new OpenAI({apiKey:openaiKey});
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
 
 exports.uploadPDF = async (req, res) => {
-  const pdfFile = req.file;
+  //const pdfFile = req.file;
   try {
-    const buffer = fs.readFileSync(pdfFile.path);
+  /*  const buffer = fs.readFileSync(pdfFile.path);
     const pdfExtract = new PDFExtract();
 
     // Use promise for extractBuffer
@@ -32,42 +34,8 @@ exports.uploadPDF = async (req, res) => {
         }
       });
     });
-
-    // Afficher le contenu text extrait
-   // console.log(textContent);
-   /*
-   const chunkSize = 200;
-   const chunkOverlap = 150;
-   
-   function chunkText(text, chunkSize, chunkOverlap) {
-       const chunks = [];
-       let startIndex = 0;
-     
-       while (startIndex < text.length) {
-           const chunk = text.substring(startIndex, startIndex + chunkSize);
-           chunks.push(chunk); // Stocker chaque chunk comme une chaîne de texte
-           startIndex += chunkSize - chunkOverlap; // Appliquer le chevauchement
-       }
-     
-       return chunks;
-   }
-   
-
-function chunkText(text, chunkSize) {
-  const chunks = [];
-  let startIndex = 0;
-  while (startIndex < text.length) {
-    const chunk = text.substring(startIndex, startIndex + chunkSize);
-    chunks.push(chunk);
-    startIndex += chunkSize;
-  }
-  return chunks;
-}
-
-const chunkSize = 200;
-const textChunks = chunkText(textContent, chunkSize);
-
 */
+/*
 
 function chunkTextRegex(text, regexPattern) {
   const chunks = text.split(regexPattern).filter(Boolean);
@@ -85,26 +53,11 @@ const textChunks = chunkTextRegex(textContent, regexPattern);
    const textFormater = textChunks.filter(chunk => chunk !=='.');
    const documentIds = textFormater.map((document, index) => `id${index}`);
 
-
-// Adding documents to collection
-   //collection.add({ documents: textChunks, ids: documentIds });
-   
    // Ajouter les documents à la collection ChromaDB
    
   console.log("========chunks================");
   console.log(textFormater);
   console.log("========chunks================");
-/*
-
-
-      function cleanText(text) {
-        // Supprimer les caractères spéciaux et les retours à la ligne
-        const cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, "");
-        return cleanedText;
-      }
-   */   
-      // Utilisation de la fonction cleanText pour nettoyer le texte extrait
-     
 
       function generateRandomString(length) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -117,7 +70,6 @@ const textChunks = chunkTextRegex(textContent, regexPattern);
 
     const cc = new chroma.ChromaClient({ path: "http://localhost:8080" });
     //await cc.reset();
-       const collectionName = "test-pdf";
       const  fakeName =generateRandomString(5)
        const google = new chroma.GoogleGenerativeAiEmbeddingFunction({
         googleApiKey: apiKey,
@@ -149,88 +101,142 @@ const textChunks = chunkTextRegex(textContent, regexPattern);
 
       console.log("============================================");
       const query = await queryCollection.query({
-        queryTexts: ["c'est qui antigone ?"],
+        queryTexts: [" Sophocle"],
         nResults: 2,
       });
       console.log("query", query);
-    console.log("=============boot==response===========");
-    setupDataAndVectorStoreOnce(query, apiKey);
-    const result2 = userQueryWithConversationChain("c'est qui antigone ?", apiKey, "Gemini 1.0 Pro", temperature, topK, prompt, maxMemoryToken);
 
-    console.log(result2.response, result.metadata);
-/*
-    cc.listCollections().then(existingCollections => {
-    console.log(existingCollections);
-    const collectionName = "test-pdf";
-    if (existingCollections.includes(collectionName)) {
-        cc.deleteCollection(collectionName);
-        console.log(`La collection ${collectionName} a été supprimée.`);    
-    } else {
-      console.log(`La collection ${collectionName} n'existe pas.`);
+ */   
+    //ai agent ==================================================
+    const assistant_id ='asst_xqRpZzbGDOSzJI2mUeC2bQ18';
+      try {
+
+        /*
+        const assistant = await openai.beta.assistants.create({
+          name: "Chat-Bot AI",
+          instructions:
+            "Chat-Bot AI is your intelligent legal companion, designed to assist you in navigating the complex world of laws and regulations effortlessly.",
+          model: "gpt-3.5-turbo",
+          tools: [{ type: "file_search" }],
+        });
+    */
+        
+      // use files 
+
+      
+const uploadDirectory = './uploads';
+
+const getUploadsFiles = () => {
+  return new Promise((resolve, reject) => {
+    fs.readdir(uploadDirectory, (err, files) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(files);
+      }
+    });
+  });
+};
+
+const uploadFiles = await getUploadsFiles();
+
+// Créer les flux de fichiers pour chaque fichier dans 'uploads'
+const fileStreams = await Promise.all(uploadFiles.map(async (fileName) => {
+  return await openai.files.create({
+    file: fs.createReadStream(path.join(uploadDirectory, fileName)),
+    purpose: "assistants",
+  });
+}));
+
+console.log("File Streams:", uploadFiles);
+
+   /*   const fileStreams = await openai.files.create({
+        file : fs.createReadStream('./abido.pdf'),
+        purpose : "assistants",
+      });*/
+
+    
+       
+      // Create a vector store including our two files.
+     /* let vectorStore = await openai.beta.vectorStores.create({
+        name: "pdf-rag",
+      });*/
+   /*
+      const vectorStore = await openai.beta.vectorStores.create({
+        name: "pdf-rag",
+        file_ids: [fileStreams]
+      });
+*/
+
+var thread='';
+  for (const fileStream of fileStreams) {
+  // Mettez à jour l'assistant avec l'ID du fichier actuel
+  await openai.beta.assistants.update(assistant_id, {
+    file_ids: [fileStream.id],
+  });
+
+
+
+  console.log(fileStreams[0].id);
+
+  // Créez le fil de discussion avec l'attachement du fichier actuel
+    thread = await openai.beta.threads.create({
+    messages: [
+      {
+        role: "user",
+        content: "donnez pour abdelilah des conseils !",
+        attachments: [{ file_id: fileStreams[0].id, tools: [{ type: "file_search" }] }],
+      },
+    ],
+  });
+}      
+      console.log("testing ai agent ==============================");
+      // The thread now has a vector store in its tool resources.
+      console.log(thread.tool_resources?.file_search);
+    
+      
+      //thread =================================
+       
+
+  const stream = openai.beta.threads.runs
+  .stream(thread.id, {
+    assistant_id: assistant_id,
+  })
+  .on("textCreated", () => console.log("assistant >"))
+  .on("toolCallCreated", (event) => console.log("assistant " + event.type))
+  .on("messageDone", async (event) => {
+    if (event.content[0].type === "text") {
+      const { text } = event.content[0];
+      const { annotations } = text;
+      const citations = [];
+
+      let index = 0;
+      for (let annotation of annotations) {
+        text.value = text.value.replace(annotation.text, "[" + index + "]");
+        const { file_citation } = annotation;
+        if (file_citation) {
+          const citedFile = await openai.files.retrieve(file_citation.file_id);
+          citations.push("[" + index + "]" + citedFile.filename);
+        }
+        index++;
+      }
+
+      console.log(text.value);
+      console.log(citations.join("\n"));
     }
   });
+
+
     
-    const google = new chroma.GoogleGenerativeAiEmbeddingFunction({
-      googleApiKey: apiKey,
-    });
+       // return assistant;
+      } catch (error) {
+        console.error("Error creating assistant:", error);
+      }
+    //ai agent ==================================================
 
-    const collection = await cc.createCollection({
-      name: "rag-7-collection-pdf",
-      embeddingFunction: google,
-    });
-    
-    const cleanedTextContent = cleanText(textContent);
-    console.log(textContent);
-   
-      const response = await collection.add({
-        ids: ["id1", "id2"],
-        embeddings: [
-          [1, 2, 3],
-          [4, 5, 6],
-        ],
-        metadatas: [{ key: "value" }, { key: "value" }],
-        documents: ["document1", "document2"],
-      });
-/*
-    try {
-      // Use try/catch for individual Chroma DB operations (optional)
-      await collection.add({
-        ids: ["doc1"],
-        documents: [textContent], // Utilisation du texte extrait ici
-      });
-    } catch (error) {
-      console.error("Error adding document to Chroma DB:", error);
-      // Handle specific error scenarios (e.g., check error.status)
-    }
-
-    let count = collection.count();
-    console.log("count", count);
-
-    const googleQuery = new chroma.GoogleGenerativeAiEmbeddingFunction({
-      googleApiKey: apiKey,
-      taskType: "RETRIEVAL_QUERY",
-    });
-
-    const queryCollection = await cc.getCollection({
-      name: "test-pdf",
-      embeddingFunction: googleQuery,
-    });
-
-    const query = await collection.query({
-      queryTexts: ["Antigone"],
-      nResults: 1,
-    });
-    console.log("query", query);
-
-    console.log("COMPLETED");
-
-    const collections = await cc.listCollections();
-    console.log("collections", collections);
-
-    */res.status(200).json({ textContent });
+     res.status(200).json({});
   } catch (error) {
     console.error("Erreur lors du chargement du fichier PDF :", error);
-    // Handle general errors here (e.g., PDF extraction errors)
     res.status(500).json({ error: "Une erreur est survenue lors du traitement du fichier PDF" });
   }
 };

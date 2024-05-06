@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "chat-bot-rag",
+  "private_key_id": "e43b400a7b6ad0513fcee123e82433222e1713ad",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCsoe1FIXKVF0NF\nN0brMWP76AW4y769Fdnawr+8+OM6im7ly7i82cYhwAgxrX2CUfoqaw2nu9VUsTRj\n5McHT2B0MHWmmufNtbOWbrIx+QqiGAuidVmr6x+E7QG7BXGk5gAPgVscwdqZdI3E\nvtDYh2ahB4LEumpVlDViUPnDugzvsRvS6xIxal9dQQtNlUtVwuam4l0JLAEw4nnq\n3RAfk5XSGSNRt0CphHQQUXNidpsidO5MVhi0OpQ5at2p5IrjX0ydOonVSe1r93dt\nKGYBJdoT72j08FlqDI+qhqQUUSHz7eP+jErHOE018Lc5/nwE6KcEdi+f/yGqzeVN\nRDa/nd1HAgMBAAECggEAUP10/gJXqeesiTwKOwxEbqnniU+ZMEegmffVEZiork3F\nAm1Fwd/fivT3Qys0H2BLX/wyf1dpmd67CASMdXsBcvFLOPsitklBNFnBox1GJk7m\nonSwua3I70lsDuxaaTT4oU2cS80MvALJAh1NiNBZT0HhUV9txLGQLAx2aSOPryFg\neq6pNEZkZzrU6TSMU6kwN+StydUk7S8dcNem4KgBjzyJpqCGCF7BPp/p66tTgyVw\nEN5IgBBfp1IaUF9sI5XWN3BitebinvFy16iMlMO1leOS7PY3AbHccgphC44n6k8b\nklTB954QgiGPbZoOEphhzIt4H/sG09E/5eLpcMl4FQKBgQDUiT99ECViBYdEatTN\nGNLGOULAYTSkY1bIhEfli6f9+ohZq30+6l3FVPLzij8GGM/T0GzfKv7wxCLapPlY\nC/qXnWgYvEbxKNa8pIawbKlun+FnjpaF+YR+PS3aFXNLj7aA518yj5cXZ9ZUP5tn\nRVqp3nF5VVapBx1K2a+mjx9E9QKBgQDP76JdzrCey0c5e3/qTBh6+XQm7r015F8Y\n2W29e1rdvgMF/vLXhYCqnZoRhs1NL/h60beqGCtGm4EoPuIpFDMQYoT2J9CUJScz\naX97j5AWXQkmEWCO0gLS0chRLwTofikTTkJcfAU9UEtbPNE/P3LosAa60Tt++yfK\nVpT5AGQTywKBgQCPAZ5/hxqwPuoKZhuzuQ0xpZu9mGp0Zgchuqgp0vOBWE7gjxwh\n9k6MFaG3rwDDGHTWn/pxmxuZY0/UcIb58G14EMjXQ/A0GneKzOV31lWXAusG5BFy\nKjc1PfMZN6+xWwzA5W3PtoBClnLHk1j8ftUHUY5mxr4d05SpJZoj509x9QKBgQDL\nVrOYuH7PSkokVDkKjc+Csl57lAtDoEe+rSE7ol2Bakbani4rxEnGjsgTS5eIW9jJ\ngjvxAiGPspHjIVtYgIBPDYiojtbRiGOFSy13TzTAKcrAh029XHGWZ79UZH6QPI8+\nadFLT5xwEQ0f86FMEGf2U+zA08syqbiHjZOwzEkRcQKBgBpPBNHL88uYnqBBrvrr\nZSEa4sJkYYZ+KLkgOevCs6LZJ7Oyb9F1l8fNNJloonYBbECXZ87l+WSIl6jWm7Ru\n8oUeUscIqieWaM8try0hbVkoEF9wXDxCUxCrCXDBwBPIzedvHn6XA2Ctk/9UKv2P\nQOBDlFp7gIqNR5zyGN+3nJA7\n-----END PRIVATE KEY-----\n",
+  "client_email": "rag-app@chat-bot-rag.iam.gserviceaccount.com",
+  "client_id": "117180088614207110282",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/rag-app%40chat-bot-rag.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
