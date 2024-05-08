@@ -4,6 +4,9 @@ const openaiKey = 'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
 const openai = new OpenAI({ apiKey: openaiKey });
 const fs = require('fs');
 const assistant_id = 'asst_I7zlg4wQnAV626vdY7u4aZcK';
+const publicPdfKey='project_public_9f2313869f625aeaa91542530ba3ec04_lHjM1ea925886a2caec5bd36fca1c005c5321';
+const privatePdfKey='secret_key_157219d5d388ff82a84a68c746b3598c_MJp1A8ae2c4e29154da7412c9f32ad6817742';
+
 // Variable pour stocker l'historique du chat
 let chatHistory = [];
 
@@ -24,7 +27,9 @@ const chatController = {
             const uploadDirectory = './uploads';
             const uploadFiles = await getUploadsFiles(uploadDirectory);
             const fileStreams = await createFileStreams(uploadFiles, uploadDirectory);
+             //convert office to pdf =====================================================
 
+             //convert office to pdf 
             // Effectuez le traitement avec votre chatbot
             const thread = await openai.beta.threads.create({
                 messages: [
@@ -49,7 +54,7 @@ const chatController = {
                 .on("messageDone", async (event) => {
                     if (event.content[0].type === "text") {
                         const { text } = event.content[0];
-                        console.log(text.value);
+                       // console.log(text.value);
                         // Envoyer la réponse de l'agent AI une fois qu'elle est prête
                         res.json({ text: text.value });
                     }

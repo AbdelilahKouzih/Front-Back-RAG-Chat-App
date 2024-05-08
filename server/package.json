@@ -14,16 +14,27 @@
   "dependencies": {
     "@google-cloud/vertexai": "^1.1.0",
     "@google/generative-ai": "^0.9.0",
+    "@ilovepdf/ilovepdf-nodejs": "^0.2.5",
+    "axios": "^1.6.8",
     "chromadb": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "form-data": "^4.0.0",
     "multer": "^1.4.5-lts.1",
+    "node-microphone": "^0.1.6",
+    "node-record-lpcm16": "^1.0.1",
+    "node-sox": "^1.0.0",
+    "node-wav": "^0.0.2",
     "openai": "^4.40.2",
     "pdf-lib": "^1.17.1",
     "pdf.js-extract": "^0.2.1",
     "pdf2json": "^3.1.1",
     "pdfjs-dist": "^4.2.67",
-    "rag-chatbot": "^1.0.2"
+    "play-sound": "^1.1.6",
+    "rag-chatbot": "^1.0.2",
+    "speaker": "^0.5.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

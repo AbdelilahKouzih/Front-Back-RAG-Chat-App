@@ -1,242 +1,144 @@
 const fs = require('fs');
 const PDFExtract = require('pdf.js-extract').PDFExtract;
-const chroma = require("chromadb"); // Import du module chromadb
-const { log } = require('console');
-const { OpenAI } = require("openai");
+const chroma = require("chromadb");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
-
 const openaiKey = 'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
-const openai = new OpenAI({apiKey:openaiKey});
+const { OpenAI } = require("openai");
+const openai = new OpenAI({ apiKey: openaiKey });
+
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
-
-exports.uploadPDF = async (req, res) => {
-  //const pdfFile = req.file;
-  try {
-  /*  const buffer = fs.readFileSync(pdfFile.path);
-    const pdfExtract = new PDFExtract();
-
-    // Use promise for extractBuffer
-    const data = await new Promise((resolve, reject) => {
-      pdfExtract.extractBuffer(buffer, {}, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
-
-    let textContent = '';
-    data.pages.forEach(page => {
-      page.content.forEach(content => {
-        if (content.str) {
-          textContent += content.str + ' ';
-        }
-      });
-    });
-*/
-/*
-
-function chunkTextRegex(text, regexPattern) {
-  const chunks = text.split(regexPattern).filter(Boolean);
-  return chunks;
-}
-
-
-const regexPattern = /(?<=\S)([.?!])\s+/g;  // Exclude empty matches at start/end
-const textChunks = chunkTextRegex(textContent, regexPattern);
-
-//   const textChunks = chunkText(textContent, chunkSize, chunkOverlap);
-   
-
-
-   const textFormater = textChunks.filter(chunk => chunk !=='.');
-   const documentIds = textFormater.map((document, index) => `id${index}`);
-
-   // Ajouter les documents à la collection ChromaDB
-   
-  console.log("========chunks================");
-  console.log(textFormater);
-  console.log("========chunks================");
-
-      function generateRandomString(length) {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-        return result;
-    }
-
-    const cc = new chroma.ChromaClient({ path: "http://localhost:8080" });
-    //await cc.reset();
-      const  fakeName =generateRandomString(5)
-       const google = new chroma.GoogleGenerativeAiEmbeddingFunction({
-        googleApiKey: apiKey,
-      });
-    
-     const collection = await cc.createCollection({
-        name: fakeName,
-        embeddingFunction: google,
-      });
-      
-      await collection.add({
-        ids: documentIds,
-        documents: textFormater,
-      });
-
-      let count = await collection.count();
-      console.log("count===========", count);
-
-      const googleQuery = new chroma.GoogleGenerativeAiEmbeddingFunction({
-        googleApiKey:apiKey,
-        taskType: "RETRIEVAL_QUERY",
-      });
-
-    
-      const queryCollection = await cc.getCollection({
-        name: fakeName,
-        embeddingFunction: googleQuery,
-      });
-
-      console.log("============================================");
-      const query = await queryCollection.query({
-        queryTexts: [" Sophocle"],
-        nResults: 2,
-      });
-      console.log("query", query);
-
- */   
-    //ai agent ==================================================
-    const assistant_id ='asst_xqRpZzbGDOSzJI2mUeC2bQ18';
-      try {
-
-        /*
-        const assistant = await openai.beta.assistants.create({
-          name: "Chat-Bot AI",
-          instructions:
-            "Chat-Bot AI is your intelligent legal companion, designed to assist you in navigating the complex world of laws and regulations effortlessly.",
-          model: "gpt-3.5-turbo",
-          tools: [{ type: "file_search" }],
-        });
-    */
-        
-      // use files 
-
-      
+const genAI = new GoogleGenerativeAI(apiKey);
 const uploadDirectory = './uploads';
 
-const getUploadsFiles = () => {
-  return new Promise((resolve, reject) => {
-    fs.readdir(uploadDirectory, (err, files) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(files);
-      }
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+exports.uploadPDF = async (req, res) => {
+  const { userInput, formData } = req.body;
+
+  try {
+
+    const cc = new chroma.ChromaClient({ path: "http://localhost:8080" });
+    const fakeName =generateRandomString(5);
+    const google = new chroma.GoogleGenerativeAiEmbeddingFunction({
+      googleApiKey: apiKey,
     });
-  });
-};
+        
+    const collection = await cc.createCollection({
+      name: fakeName,
+      embeddingFunction: google,
+    });
 
-const uploadFiles = await getUploadsFiles();
+    const getUploadsFiles = async () => {
+      let files = fs.readdirSync(uploadDirectory);
+      if (files.length === 0) {
+        console.log("Aucun fichier trouvé dans le répertoire. Attente de nouveaux fichiers...");
+        return;
+      }
 
-// Créer les flux de fichiers pour chaque fichier dans 'uploads'
-const fileStreams = await Promise.all(uploadFiles.map(async (fileName) => {
-  return await openai.files.create({
-    file: fs.createReadStream(path.join(uploadDirectory, fileName)),
-    purpose: "assistants",
-  });
-}));
-
-console.log("File Streams:", uploadFiles);
-
-   /*   const fileStreams = await openai.files.create({
-        file : fs.createReadStream('./abido.pdf'),
-        purpose : "assistants",
-      });*/
-
-    
-       
-      // Create a vector store including our two files.
-     /* let vectorStore = await openai.beta.vectorStores.create({
-        name: "pdf-rag",
-      });*/
-   /*
-      const vectorStore = await openai.beta.vectorStores.create({
-        name: "pdf-rag",
-        file_ids: [fileStreams]
-      });
-*/
-
-var thread='';
-  for (const fileStream of fileStreams) {
-  // Mettez à jour l'assistant avec l'ID du fichier actuel
-  await openai.beta.assistants.update(assistant_id, {
-    file_ids: [fileStream.id],
-  });
-
-
-
-  console.log(fileStreams[0].id);
-
-  // Créez le fil de discussion avec l'attachement du fichier actuel
-    thread = await openai.beta.threads.create({
-    messages: [
-      {
-        role: "user",
-        content: "donnez pour abdelilah des conseils !",
-        attachments: [{ file_id: fileStreams[0].id, tools: [{ type: "file_search" }] }],
-      },
-    ],
-  });
-}      
-      console.log("testing ai agent ==============================");
-      // The thread now has a vector store in its tool resources.
-      console.log(thread.tool_resources?.file_search);
-    
-      
-      //thread =================================
-       
-
-  const stream = openai.beta.threads.runs
-  .stream(thread.id, {
-    assistant_id: assistant_id,
-  })
-  .on("textCreated", () => console.log("assistant >"))
-  .on("toolCallCreated", (event) => console.log("assistant " + event.type))
-  .on("messageDone", async (event) => {
-    if (event.content[0].type === "text") {
-      const { text } = event.content[0];
-      const { annotations } = text;
-      const citations = [];
-
-      let index = 0;
-      for (let annotation of annotations) {
-        text.value = text.value.replace(annotation.text, "[" + index + "]");
-        const { file_citation } = annotation;
-        if (file_citation) {
-          const citedFile = await openai.files.retrieve(file_citation.file_id);
-          citations.push("[" + index + "]" + citedFile.filename);
+      for (const file of files) {
+        const filePath = path.join(uploadDirectory, file);
+        try {
+          const stats = fs.statSync(filePath);
+          if (stats.size === 0) {
+            console.error(`Le fichier ${file} est vide.`);
+            continue;
+          }
+          const buffer = fs.readFileSync(filePath);
+          const pdfExtract = new PDFExtract();
+          const data = await new Promise((resolve, reject) => {
+            pdfExtract.extractBuffer(buffer, {}, (err, data) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(data);
+              }
+            });
+          });
+          let textContent = '';
+          data.pages.forEach(page => {
+            page.content.forEach(content => {
+              if (content.str) {
+                textContent += content.str + ' ';
+              }
+            });
+          });
+          const regexPattern = /(?<=\S)([.?!])\s+/g;
+          const textChunks = chunkTextRegex(textContent, regexPattern);
+          const formattedTexts = textChunks.filter(chunk => chunk !=='.');
+          for (const formattedText of formattedTexts) {
+            const documentId = generateRandomString(10);
+            await collection.add({
+              ids: [documentId],
+              documents: [formattedText],
+            });
+          }
+        } catch (error) {
+          console.error(`Une erreur est survenue lors de la lecture du fichier ${file}:`, error);
         }
-        index++;
       }
+    };
 
-      console.log(text.value);
-      console.log(citations.join("\n"));
-    }
-  });
+    const chunkTextRegex = (text, regexPattern) => {
+      const chunks = text.split(regexPattern).filter(Boolean);
+      return chunks;
+    };
 
 
+    await getUploadsFiles();
+    const count = await collection.count();
+    console.log("Nombre de documents ajoutés à la collection:", count);
+  
+    const googleQuery = new chroma.GoogleGenerativeAiEmbeddingFunction({
+      googleApiKey: apiKey,
+      taskType: "RETRIEVAL_QUERY",
+    });
+
+    const queryCollection = await cc.getCollection({
+      name: fakeName,
+      embeddingFunction: googleQuery,
+    });
+
+    console.log("============================================");
+    const query = await queryCollection.query({
+      queryTexts: [userInput],
+      nResults: 2,
+       
+    });
+   // console.log("query", query);
+
+     console.log("query", query);
+     const documents = query.documents.flat();
+      let textoContent = '';
+      documents.forEach(document => {
+          textoContent += document + '\n';
+      });
+      console.log(textoContent);
+
+     console.log("=======================");
+    let prompt = `Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question. Si vous ne connaissez pas la réponse, dites simplement que vous ne savez pas. Utilisez trois phrases maximum et gardez la réponse concise. Question : ${userInput} Contexte : ${textoContent}`;
+    console.log("response of open ai ================================= \n");
+    async function main() {
+      const completion = await openai.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "gpt-3.5-turbo",
+      });
     
-       // return assistant;
-      } catch (error) {
-        console.error("Error creating assistant:", error);
-      }
-    //ai agent ==================================================
+      console.log(completion.choices[0].message.content);
+    }
+    
+    main();
+    
+    res.status(200).json({ success: true, message: "Traitement des fichiers PDF terminé." });
 
-     res.status(200).json({});
   } catch (error) {
-    console.error("Erreur lors du chargement du fichier PDF :", error);
-    res.status(500).json({ error: "Une erreur est survenue lors du traitement du fichier PDF" });
+    console.error("Erreur lors du chargement ou du traitement des fichiers PDF :", error);
+    res.status(500).json({ error: "Une erreur est survenue lors du traitement des fichiers PDF" });
   }
 };
