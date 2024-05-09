@@ -11,7 +11,7 @@ const embedder = new OpenAIEmbeddingFunction({openai_api_key: openaiKey})
 
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
 const genAI = new GoogleGenerativeAI(apiKey);
-const uploadDirectory = './uploads';
+const uploadDirectory = './outPutFiles';
 
 function generateRandomString(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -26,6 +26,32 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+
+app.delete('/api/files/:fileName', (req, res) => {
+  const { fileName } = req.params;
+  const filePath = path.join(uploadDirectory, fileName);
+
+  // Vérifier si le fichier existe
+  fs.stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      res.status(404).json({ error: 'Le fichier spécifié n\'existe pas.' });
+      return;
+    }
+
+    // Supprimer le fichier
+    fs.unlink(filePath, err => {
+      if (err) {
+        console.error('Erreur lors de la suppression du fichier :', err);
+        res.status(500).json({ error: 'Erreur serveur lors de la suppression du fichier.' });
+        return;
+      }
+      res.json({ message: 'Le fichier a été supprimé avec succès.' });
+    });
+  });
+});
+
+
+
 app.post('/api/upload1-pdf', upload.array('pdfFiles'), (req, res) => {
     // Traitez les fichiers téléchargés ici
     res.send('Fichiers téléversés avec succès !');
@@ -47,6 +73,10 @@ app.get('/api/files', (req, res) => {
 app.use('/api', chatRoutes);
 app.use('/api', pdfRoutes); // Utilisez le fichier de routes pour les fichiers PDF
 app.use('/api',searchRoutes);
+
+
+
+
 
 const port = 5000;
 app.listen(port, () => {
