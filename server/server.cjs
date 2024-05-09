@@ -11,6 +11,7 @@ app.use(express.json());
 
 const pdfRoutes = require('./routes/pdfRoutes.cjs');
 const chatRoutes = require('./routes/chatRoutes.cjs');
+const searchRoutes = require('./routes/searchRoutes.cjs');
 
 const uploadDirectory = path.join(__dirname, 'uploads');
 
@@ -45,7 +46,7 @@ app.get('/api/files', (req, res) => {
 
 app.use('/api', chatRoutes);
 app.use('/api', pdfRoutes); // Utilisez le fichier de routes pour les fichiers PDF
-
+app.use('/api',searchRoutes);
 
 const port = 5000;
 app.listen(port, () => {

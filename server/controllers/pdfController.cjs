@@ -6,6 +6,8 @@ const path = require('path');
 const openaiKey = 'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
 const { OpenAI } = require("openai");
 const openai = new OpenAI({ apiKey: openaiKey });
+const {OpenAIEmbeddingFunction} = require('chromadb');
+const embedder = new OpenAIEmbeddingFunction({openai_api_key: openaiKey})
 
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -70,10 +72,11 @@ exports.uploadPDF = async (req, res) => {
             });
           });
           const regexPattern = /(?<=\S)([.?!])\s+/g;
-          const textChunks = chunkTextRegex(textContent, regexPattern);
+          const textChunks = chunkTextRegex(textContent,regexPattern);
           const formattedTexts = textChunks.filter(chunk => chunk !=='.');
           for (const formattedText of formattedTexts) {
             const documentId = generateRandomString(10);
+
             await collection.add({
               ids: [documentId],
               documents: [formattedText],
@@ -84,6 +87,8 @@ exports.uploadPDF = async (req, res) => {
         }
       }
     };
+
+  
 
     const chunkTextRegex = (text, regexPattern) => {
       const chunks = text.split(regexPattern).filter(Boolean);
@@ -108,18 +113,16 @@ exports.uploadPDF = async (req, res) => {
     console.log("============================================");
     const query = await queryCollection.query({
       queryTexts: [userInput],
-      nResults: 2,
+      nResults: 1,
        
     });
-   // console.log("query", query);
-
      console.log("query", query);
      const documents = query.documents.flat();
       let textoContent = '';
       documents.forEach(document => {
           textoContent += document + '\n';
       });
-      console.log(textoContent);
+      console.log("chromadb response : == ",textoContent);
 
      console.log("=======================");
     let prompt = `Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question. Si vous ne connaissez pas la réponse, dites simplement que vous ne savez pas. Utilisez trois phrases maximum et gardez la réponse concise. Question : ${userInput} Contexte : ${textoContent}`;

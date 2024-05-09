@@ -6,14 +6,64 @@ const fs = require('fs');
 const assistant_id = 'asst_I7zlg4wQnAV626vdY7u4aZcK';
 const publicPdfKey='project_public_9f2313869f625aeaa91542530ba3ec04_lHjM1ea925886a2caec5bd36fca1c005c5321';
 const privatePdfKey='secret_key_157219d5d388ff82a84a68c746b3598c_MJp1A8ae2c4e29154da7412c9f32ad6817742';
+const ILovePDFApi = require('@ilovepdf/ilovepdf-nodejs');
+const instance = new ILovePDFApi(publicPdfKey, privatePdfKey);
+const ILovePDFFile = require('@ilovepdf/ilovepdf-nodejs/ILovePDFFile');
+
+
 
 // Variable pour stocker l'historique du chat
 let chatHistory = [];
 
 const chatController = {
+
+
     processChat: async (req, res) => {
         const { userInput } = req.body;
+           // Cette fonction convertit un fichier en PDF
+            const convertToPDF = async (inputFilePath, outputFilePath) => {
+                try {
+                    // Créer une nouvelle tâche iLovePDF pour convertir le fichier en PDF
+                    const task = instance.newTask('officepdf');
+                    await task.start();
+                    const file = new ILovePDFFile(inputFilePath);
+                    await task.addFile(file);
+                    await task.process();
+                    const pdfData = await task.download();
+                    
+                    // Écrire les données PDF dans le fichier de sortie
+                    fs.writeFileSync(outputFilePath, pdfData);
+                } catch (error) {
+                    console.error("Erreur lors de la conversion en PDF :", error);
+                    throw error;
+                }
+            };
 
+            // Chemin vers le répertoire d'entrée (uploads) et de sortie (outputFiles)
+            const inputDir = './uploads';
+            const outputDir = './outputFiles';
+
+            // Lire le contenu du répertoire d'entrée
+            fs.readdir(inputDir, async (err, files) => {
+                if (err) {
+                    console.error('Erreur lors de la lecture du répertoire:', err);
+                    return;
+                }
+
+                // Boucler sur chaque fichier dans le répertoire d'entrée
+                for (const file of files) {
+                    const inputFilePath = path.join(inputDir, file);
+                    const outputFilePath = path.join(outputDir, path.parse(file).name + '.pdf');
+                    
+                    // Convertir le fichier en PDF
+                    try {
+                        await convertToPDF(inputFilePath, outputFilePath);
+                        console.log(`Conversion réussie: ${inputFilePath} -> ${outputFilePath}`);
+                    } catch (error) {
+                        console.error(`Erreur lors de la conversion du fichier ${inputFilePath} en PDF:`, error);
+                    }
+                }
+            });
       /*  const assistant = await openai.beta.assistants.create({
             name: "Chat-Bot AI",
             instructions:
@@ -24,7 +74,7 @@ const chatController = {
 
         try {
             // Créer les flux de fichiers pour chaque fichier dans 'uploads'
-            const uploadDirectory = './uploads';
+            const uploadDirectory = './outPutFiles';
             const uploadFiles = await getUploadsFiles(uploadDirectory);
             const fileStreams = await createFileStreams(uploadFiles, uploadDirectory);
              //convert office to pdf =====================================================
