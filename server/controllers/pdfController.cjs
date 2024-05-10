@@ -8,6 +8,12 @@ const { OpenAI } = require("openai");
 const openai = new OpenAI({ apiKey: openaiKey });
 const {OpenAIEmbeddingFunction} = require('chromadb');
 const embedder = new OpenAIEmbeddingFunction({openai_api_key: openaiKey})
+const publicPdfKey='project_public_9f2313869f625aeaa91542530ba3ec04_lHjM1ea925886a2caec5bd36fca1c005c5321';
+const privatePdfKey='secret_key_157219d5d388ff82a84a68c746b3598c_MJp1A8ae2c4e29154da7412c9f32ad6817742';
+const ILovePDFApi = require('@ilovepdf/ilovepdf-nodejs');
+const instance = new ILovePDFApi(publicPdfKey, privatePdfKey);
+const ILovePDFFile = require('@ilovepdf/ilovepdf-nodejs/ILovePDFFile');
+let resresult = '';
 //const chunkit = require('./chunkit.cjs');
 async function importChunkit(text) {
   const { chunkit } = await import('semantic-chunking');
@@ -34,7 +40,7 @@ async function importChunkit(text) {
 
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
 const genAI = new GoogleGenerativeAI(apiKey);
-const uploadDirectory = './outPutFiles';
+const uploadDirectory = './outputFiles';
 
 function generateRandomString(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -46,6 +52,54 @@ function generateRandomString(length) {
 }
 exports.uploadPDF = async (req, res) => {
   const { userInput, formData } = req.body;
+
+  const convertToPDF = async (inputFilePath, outputFilePath) => {
+    try {
+        // Créer une nouvelle tâche iLovePDF pour convertir le fichier en PDF
+        const task = instance.newTask('officepdf');
+        await task.start();
+        const file = new ILovePDFFile(inputFilePath);
+        await task.addFile(file);
+        await task.process();
+        const pdfData = await task.download();
+        
+        // Écrire les données PDF dans le fichier de sortie
+        fs.writeFileSync(outputFilePath, pdfData);
+    } catch (error) {
+        console.error("Erreur lors de la conversion en PDF :", error);
+        throw error;
+    }
+};
+
+// Chemin vers le répertoire d'entrée (uploads) et de sortie (outputFiles)
+const inputDir = './uploads';
+const outputDir = './outputFiles';
+
+// Lire le contenu du répertoire d'entrée
+fs.readdir(inputDir, async (err, files) => {
+    if (err) {
+        console.error('Erreur lors de la lecture du répertoire:', err);
+        return;
+    }
+
+    // Boucler sur chaque fichier dans le répertoire d'entrée
+    for (const file of files) {
+        const inputFilePath = path.join(inputDir, file);
+        const outputFilePath = path.join(outputDir, path.parse(file).name + '.pdf');
+        
+        // Convertir le fichier en PDF
+        try {
+            await convertToPDF(inputFilePath, outputFilePath);
+            console.log(`Conversion réussie: ${inputFilePath} -> ${outputFilePath}`);
+        } catch (error) {
+            console.error(`Erreur lors de la conversion du fichier ${inputFilePath} en PDF:`, error);
+        }
+    }
+});
+
+
+
+
 
   try {
 
@@ -152,7 +206,7 @@ exports.uploadPDF = async (req, res) => {
     console.log("============================================");
     const query = await queryCollection.query({
       queryTexts: [userInput],
-      nResults: 1,
+      nResults: 2,
        
     });
      console.log("query", query);
@@ -161,7 +215,7 @@ exports.uploadPDF = async (req, res) => {
       documents.forEach(document => {
           textoContent += document + '\n';
       });
-      console.log("chromadb response : == ",textoContent);
+      //console.log("chromadb response : == ",textoContent);
 
      console.log("=======================");
     let prompt = `Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question. Si vous ne connaissez pas la réponse, dites simplement que vous ne savez pas. Utilisez trois phrases maximum et gardez la réponse concise. Question : ${userInput} Contexte : ${textoContent}`;
@@ -172,12 +226,13 @@ exports.uploadPDF = async (req, res) => {
         model: "gpt-3.5-turbo",
       });
     
-      console.log(completion.choices[0].message.content);
+       console.log(completion.choices[0].message.content);
+       res.json({ text: completion.choices[0].message.content });
+
     }
     
     main();
-    
-    res.status(200).json({ success: true, message: "Traitement des fichiers PDF terminé." });
+
 
   } catch (error) {
     console.error("Erreur lors du chargement ou du traitement des fichiers PDF :", error);
