@@ -22,7 +22,7 @@ const ECommerce: React.FC = () => {
 
         try {
             setLoading(true);
-
+            
             // Check if the user input contains a URL
             const urlRegex = /(https?:\/\/[^\s]+)/;
             if (urlRegex.test(userInput)) {
@@ -35,7 +35,9 @@ const ECommerce: React.FC = () => {
                 ]);
             } else {
                 // If the user input does not contain a URL, launch the chatController
-                const response = await axios.post('http://localhost:5000/api/chat', { userInput });
+                const response = await axios.post('http://localhost:5000/api/upload-pdf', { userInput });
+                //console.log(response.data.text);
+                
                 setChatHistory(prevHistory => [
                     ...prevHistory,
                     { role: "user", text: userInput },
@@ -43,19 +45,7 @@ const ECommerce: React.FC = () => {
                 ]);
 
 
-                axios.post('http://localhost:5000/api/upload-pdf', {
-                    userInput: userInput
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.error("Erreur lors du téléversement :", error);
-                });
+            
             }
 
             setUserInput('');
