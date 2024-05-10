@@ -8,6 +8,29 @@ const { OpenAI } = require("openai");
 const openai = new OpenAI({ apiKey: openaiKey });
 const {OpenAIEmbeddingFunction} = require('chromadb');
 const embedder = new OpenAIEmbeddingFunction({openai_api_key: openaiKey})
+//const chunkit = require('./chunkit.cjs');
+async function importChunkit(text) {
+  const { chunkit } = await import('semantic-chunking');
+
+  let myTestChunks = await chunkit(
+    text,
+    {
+        logging: true,
+        maxTokenSize: 300,
+        similarityThreshold: .577,             // higher value requires higher similarity to be included (less inclusive)
+        dynamicThresholdLowerBound: .2,        // lower bound for dynamic threshold
+        dynamicThresholdUpperBound: .9,        // upper bound for dynamic threshold
+        numSimilaritySentencesLookahead: 3,
+        combineChunks: true,
+        combineChunksSimilarityThreshold: 0.3, // lower value will combine more chunks (more inclusive)
+        onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
+        onnxEmbeddingModelQuantized: true,
+    }
+); 
+ return myTestChunks;
+}
+
+// Call the async function to import chunkit
 
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -37,7 +60,7 @@ exports.uploadPDF = async (req, res) => {
       embeddingFunction: google,
     });
 
-    const getUploadsFiles = async () => {
+    async function  getUploadsFiles() {
       let files = fs.readdirSync(uploadDirectory);
       if (files.length === 0) {
         console.log("Aucun fichier trouvé dans le répertoire. Attente de nouveaux fichiers...");
@@ -73,8 +96,24 @@ exports.uploadPDF = async (req, res) => {
           });
           const regexPattern = /(?<=\S)([.?!])\s+/g;
           const textChunks = chunkTextRegex(textContent,regexPattern);
+          
+
+          // start timing
+          const startTime = performance.now();
+
+         let  myTestChunks = await importChunkit(textContent);
+          // end timeing
+          const endTime = performance.now();
+
+          // calculate tracked time in seconds
+          let trackedTimeSeconds = (endTime - startTime) / 1000;
+          trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
+
+          console.log("result of chunking ====",myTestChunks);
+
+
           const formattedTexts = textChunks.filter(chunk => chunk !=='.');
-          for (const formattedText of formattedTexts) {
+          for (const formattedText of myTestChunks) {
             const documentId = generateRandomString(10);
 
             await collection.add({
