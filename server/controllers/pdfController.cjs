@@ -206,7 +206,7 @@ fs.readdir(inputDir, async (err, files) => {
     console.log("============================================");
     const query = await queryCollection.query({
       queryTexts: [userInput],
-      nResults: 2,
+      nResults: 1,
        
     });
      console.log("query", query);
@@ -218,7 +218,7 @@ fs.readdir(inputDir, async (err, files) => {
       //console.log("chromadb response : == ",textoContent);
 
      console.log("=======================");
-    let prompt = `Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question. Si vous ne connaissez pas la réponse, dites simplement que vous ne savez pas. Utilisez trois phrases maximum et gardez la réponse concise. Question : ${userInput} Contexte : ${textoContent}`;
+    let prompt = `Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question . Si vous ne connaissez pas la réponse, dites simplement que vous ne savez pas. Question : ${userInput} Contexte : ${textoContent}`;
     console.log("response of open ai ================================= \n");
     async function main() {
       const completion = await openai.chat.completions.create({
