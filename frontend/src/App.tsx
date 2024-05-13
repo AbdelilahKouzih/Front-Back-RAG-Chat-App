@@ -6,6 +6,7 @@ import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import Chat from './pages/Dashboard/Chat';
+import DataVis from './pages/Dashboard/dataVis';
 import Profile from './pages/Profile';
 
 function App() {
@@ -40,6 +41,15 @@ function App() {
             <>
               <PageTitle title="Profile" />
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/datavis"
+          element={
+            <>
+              <PageTitle title="Data Visualisation" />
+              <DataVis />
             </>
           }
         />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BsFileEarmarkArrowUp, BsPlayFill } from 'react-icons/bs';
+import { BsFileEarmarkArrowUp, BsPlayFill,BsTrash } from 'react-icons/bs';
 import { FiCopy } from 'react-icons/fi'; // Importer l'icône de copie
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -35,7 +35,7 @@ const ECommerce: React.FC = () => {
                 ]);
             } else {
                 // If the user input does not contain a URL, launch the chatController
-                const response = await axios.post('http://localhost:5000/api/upload-pdf', { userInput });
+                const response = await axios.post('http://localhost:5000/api/chat', { userInput });
                 //console.log(response.data.text);
                 
                 setChatHistory(prevHistory => [
@@ -107,6 +107,9 @@ const ECommerce: React.FC = () => {
             });
         
         }
+    };
+    const clearPageContent = () => {
+        setChatHistory([]); // Vous pouvez également vider d'autres états selon vos besoins
     };
 
     return (
@@ -186,6 +189,10 @@ const ECommerce: React.FC = () => {
                         multiple
                         onChange={handleFileChange2}
                     />
+
+                    <button onClick={clearPageContent} className="p-4 bg-slate-500 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none">
+                    <BsTrash className="text-2xl" />
+                    </button>       
                 </div>
 
             </div>
