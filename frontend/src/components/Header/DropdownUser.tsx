@@ -47,12 +47,11 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             Abdelilah Kouzih
           </span>
-          <span className="block text-xs">Développeur Web</span>
+          <span className="block text-xs">Web Developer</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
-        <img src={UserOne} alt="User" className="h-12 w-12 rounded-full" />
-
+          <img src={UserOne} alt="User" className="h-12 w-12 rounded-full" />
         </span>
 
         <svg
@@ -107,9 +106,11 @@ const DropdownUser = () => {
               My Profile
             </Link>
           </li>
-          
         </ul>
+        <Link
+              to="/">
         <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+
           <svg
             className="fill-current"
             width="22"
@@ -129,6 +130,7 @@ const DropdownUser = () => {
           </svg>
           Log Out
         </button>
+        </Link>
       </div>
       {/* <!-- Dropdown End --> */}
     </div>

@@ -9,7 +9,11 @@ interface SidebarProps {
   selectedFiles: File[];
 }
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProps) => {
+const Sidebar = ({
+  sidebarOpen,
+  setSidebarOpen,
+  selectedFiles = [],
+}: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
 
@@ -18,33 +22,34 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
 
   const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
   const [sidebarExpanded, setSidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
+    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
   );
-
 
   // Fonction de suppression d'un fichier de la liste
   const deleteFile = async (fileName: string) => {
     try {
       // Envoyer une demande de suppression au backend
-      const response = await fetch(`http://localhost:5000/api/files/${fileName}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `http://localhost:5000/api/files/${fileName}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error('Erreur lors de la suppression du fichier');
       }
 
       // Supprimer le fichier de la liste frontend après confirmation du backend
-      const updatedFileList = fileList.filter(file => file !== fileName);
+      const updatedFileList = fileList.filter((file) => file !== fileName);
       setFileList(updatedFileList);
     } catch (error) {
       console.error('Erreur lors de la suppression du fichier:', error);
     }
   };
-
 
   // close on click outside
   useEffect(() => {
@@ -85,15 +90,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
   useEffect(() => {
     // Appel à la fonction fetchFiles dès le montage du composant
     fetchFiles();
-  
+
     // Définir un intervalle pour appeler fetchFiles toutes les 5 secondes
     const intervalId = setInterval(fetchFiles, 5000);
-  
+
     // Nettoyer l'intervalle lorsque le composant est démonté
     return () => clearInterval(intervalId);
   }, []);
-  
-  
+
   const fetchFiles = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/files', {
@@ -102,19 +106,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des fichiers');
       }
-  
+
       const data = await response.json();
       setFileList(data.files);
     } catch (error) {
       console.error('Erreur lors de la récupération des fichiers :', error);
     }
   };
-  
-  
 
   return (
     <aside
@@ -125,9 +127,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-      <NavLink to="/" className="flex items-center justify-center">
-      <img src={Logo} alt="Logo" className="w-50 h-auto  transition-transform duration-300 transform hover:scale-110" />
-    </NavLink>
+        <NavLink to="/" className="flex items-center justify-center">
+          <img
+            src={Logo}
+            alt="Logo"
+            className="w-50 h-auto  transition-transform duration-300 transform hover:scale-110"
+          />
+        </NavLink>
 
         <button
           ref={trigger}
@@ -239,7 +245,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
                             <NavLink
-                              to="/"
+                              to="/dashboard"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
@@ -249,7 +255,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
                             </NavLink>
                           </li>
                         </ul>
-                        
+
+                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                          <li>
+                            <NavLink
+                              to="/voice"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                (isActive && '!text-white')
+                              }
+                            >
+                              Voice chat
+                            </NavLink>
+                          </li>
+                        </ul>
+
+
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
                             <NavLink
@@ -259,7 +280,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
                                 (isActive && '!text-white')
                               }
                             >
-                             Visualisation 
+                              Visualisation
                             </NavLink>
                           </li>
                         </ul>
@@ -269,9 +290,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
                   );
                 }}
               </SidebarLinkGroup>
-              
 
-              
               <li>
                 <NavLink
                   to="/profile"
@@ -303,14 +322,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
           </div>
           <div>
             <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
-              AUTRES
+            OTHER
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
-         
-
-             
-
-              
               <SidebarLinkGroup
                 activeCondition={
                   pathname === '/auth' || pathname.includes('auth')
@@ -421,37 +435,70 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen ,selectedFiles= [] }: SidebarProp
           </div>
         </nav>
         {/* <!-- Sidebar Menu --> */}
-        
       </div>
-      
-      <div className="border border-gray-300 rounded-lg shadow-sm">
-  {selectedFiles.length > 0 && (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-800 mb-2">Selected Files:</h2>
-      <ul className="text-base text-gray-700">
-        {selectedFiles.map((file, index) => (
-          <li key={index} className="mb-1">{file.name}</li>
-        ))}
-      </ul>
-    </div>
-  )}
-</div>
 
-<div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h2 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">LISTE DES FICHIERS</h2>
+      <div className="border border-gray-300 rounded-lg shadow-sm">
+        {selectedFiles.length > 0 && (
+          <div className="p-4">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Selected Files:
+            </h2>
+            <ul className="text-base text-gray-700">
+              {selectedFiles.map((file, index) => (
+                <li key={index} className="mb-1">
+                  {file.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
+          LIST OF FILES
+        </h2>
         <ul className="space-y-4 text-left text-gray-500 dark:text-gray-400">
           {fileList.map((file, index) => (
-            <li className="flex items-center justify-between space-x-3 rtl:space-x-reverse" key={index}>
+            <li
+              className="flex items-center justify-between space-x-3 rtl:space-x-reverse"
+              key={index}
+            >
               <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                <svg className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                <svg
+                  className="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 16 12"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M1 5.917 5.724 10.5 15 1.5"
+                  />
                 </svg>
-                <span className="font-semibold text-gray-900 dark:text-white">{file}</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {file}
+                </span>
               </div>
               {/* Bouton de suppression */}
               <button onClick={() => deleteFile(file)}>
-                <svg className="w-4 h-4 text-red-500 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-4 h-4 text-red-500 dark:text-red-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </li>

@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation ,Navigate} from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import Chat from './pages/Dashboard/Chat';
+import Voice from './pages/Dashboard/VoiceAssistant';
+
 import DataVis from './pages/Dashboard/dataVis';
+import Home from './pages/Home/Home';
 import Profile from './pages/Profile';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -26,12 +30,39 @@ function App() {
   ) : (
     <>
       <Routes>
-        <Route
+      <Route path="/auth/signin" element={<SignIn email={''} password={''} switchToSignUp={function (): void {
+            throw new Error('Function not implemented.');
+          } } />} />
+      <Route
+        path="/dashboard"
+        element={<Chat /> } // Redirigez vers SignIn si l'utilisateur n'est pas connecté
+      />
+
+      <Route
+         
           index
+          element={
+            <>
+              <PageTitle title="Home" />
+              <Home />
+            </>
+          }
+        />
+        <Route
+          path="/dashboard"
           element={
             <>
               <PageTitle title="Chat Bot" />
               <Chat />
+            </>
+          }
+        />
+         <Route
+          path="/voice"
+          element={
+            <>
+              <PageTitle title="VoiceAssistant" />
+              <Voice />
             </>
           }
         />
@@ -58,7 +89,9 @@ function App() {
           element={
             <>
               <PageTitle title="Signin" />
-              <SignIn />
+              <SignIn email={''} password={''} switchToSignUp={function (): void {
+                throw new Error('Function not implemented.');
+              } } />
             </>
           }
         />
@@ -67,7 +100,7 @@ function App() {
           element={
             <>
               <PageTitle title="Signup" />
-              <SignUp />
+              
             </>
           }
         />
