@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Footer from '../../components/Home/Footer.tsx';
+import ChatBot from '../../components/Home/chatBot.tsx';
 import Header from '../../components/Home/Header.tsx';
 import Hero from '../../components/Home/Hero.tsx';
 import Pricing from '../../components/Home/Pricing.tsx';
@@ -40,6 +41,7 @@ const handleSwitchToSignIn = () => {
         <Hero openSignInModal={handleGetStartedClick} />{' '}
         {/* Pass the function to handle "Get started" click */}
         <Pricing />
+        <ChatBot/>
       </div>
       <Footer />
       {showSignIn && (

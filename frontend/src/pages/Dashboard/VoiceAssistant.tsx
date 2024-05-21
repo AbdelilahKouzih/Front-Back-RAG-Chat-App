@@ -26,6 +26,7 @@ const Chat: React.FC = () => {
     useState<SpeechRecognition | null>(null);
   const [selectedVoice, setSelectedVoice] = useState<string>('alloy'); // Défaut: 'alloy'
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const voices = [
     { name: 'Alloy', voice_id: 'alloy' },
@@ -131,6 +132,28 @@ const Chat: React.FC = () => {
         { role: 'user', text: input },
         { role: 'model', text: 'Oops! Something went wrong. Try again later.' },
       ]);
+    }
+  };
+
+
+  const handleFileChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //handleFileChange(event);
+    const files = event.target.files;
+    if (files) {
+      setSelectedFiles(Array.from(files));
+      const formData = new FormData();
+      Array.from(files).forEach((file) => {
+        formData.append('pdfFiles', file);
+      });
+
+      axios
+        .post('http://localhost:5000/api/upload1-pdf', formData)
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error('Erreur lors du téléversement :', error);
+        });
     }
   };
 
@@ -251,7 +274,14 @@ const Chat: React.FC = () => {
           >
             <BsFileEarmarkArrowUp className="text-2xl" />
           </label>
-          <input id="file-upload" type="file" className="hidden" multiple />
+          <input
+            id="file-upload"
+            type="file"
+            className="hidden"
+            multiple
+            onChange={handleFileChange2}
+          />
+
         </div>
       </div>
     </DefaultLayout>
