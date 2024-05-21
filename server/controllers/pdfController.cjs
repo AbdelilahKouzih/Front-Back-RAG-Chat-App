@@ -40,7 +40,7 @@ async function importChunkit(text) {
 
 const apiKey = "AIzaSyDGhKHN__SdqQsHC7xWY-APWxOcVkuG-N4";
 const genAI = new GoogleGenerativeAI(apiKey);
-const uploadDirectory = './outputFiles';
+const uploadDirectory = './uploads';
 
 function generateRandomString(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -89,7 +89,7 @@ fs.readdir(inputDir, async (err, files) => {
         
         // Convertir le fichier en PDF
         try {
-            await convertToPDF(inputFilePath, outputFilePath);
+           // await convertToPDF(inputFilePath, outputFilePath);
             console.log(`Conversion réussie: ${inputFilePath} -> ${outputFilePath}`);
         } catch (error) {
             console.error(`Erreur lors de la conversion du fichier ${inputFilePath} en PDF:`, error);

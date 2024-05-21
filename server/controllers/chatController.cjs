@@ -74,7 +74,7 @@ const chatController = {
 
         try {
             // Créer les flux de fichiers pour chaque fichier dans 'uploads'
-            const uploadDirectory = './outPutFiles';
+            const uploadDirectory = './uploads';
             const uploadFiles = await getUploadsFiles(uploadDirectory);
             const fileStreams = await createFileStreams(uploadFiles, uploadDirectory);
              //convert office to pdf =====================================================
