@@ -9,7 +9,7 @@ const privatePdfKey='secret_key_157219d5d388ff82a84a68c746b3598c_MJp1A8ae2c4e291
 const ILovePDFApi = require('@ilovepdf/ilovepdf-nodejs');
 const instance = new ILovePDFApi(publicPdfKey, privatePdfKey);
 const ILovePDFFile = require('@ilovepdf/ilovepdf-nodejs/ILovePDFFile');
-
+const brigth_data_api ='cf76edb3-9e7a-493e-9dc3-26b96df83e0b';
 
 
 // Variable pour stocker l'historique du chat
