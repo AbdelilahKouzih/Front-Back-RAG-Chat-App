@@ -14,6 +14,7 @@ const chatRoutes = require('./routes/chatRoutes.cjs');
 const searchRoutes = require('./routes/searchRoutes.cjs');
 const xlsxTojsonRoutes = require('./routes/xlsxTojsonRoutes.cjs');
 const userRoutes = require('./routes/userRoutes.cjs');
+const chatbotRoutes = require('./routes/chatbotRoutes.cjs'); // Ajoutez cette ligne
 
 const uploadDirectory = path.join(__dirname, 'uploads');
 const xlsxDirectory = path.join(__dirname, "xlsxFiles");
@@ -106,7 +107,8 @@ app.use('/api', chatRoutes);
 app.use('/api', pdfRoutes); // Utilisez le fichier de routes pour les fichiers PDF
 app.use('/api',searchRoutes);
 app.use('/api',xlsxTojsonRoutes);
-app.use('/api/user',userRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api', chatbotRoutes); // Ajoutez cette ligne
 
 
 
