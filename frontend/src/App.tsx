@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation} from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -17,7 +17,6 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
 
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -31,16 +30,24 @@ function App() {
   ) : (
     <>
       <Routes>
-      <Route path="/auth/signin" element={<SignIn email={''} password={''} switchToSignUp={function (): void {
-            throw new Error('Function not implemented.');
-          } } />} />
-      <Route
-        path="/dashboard"
-        element={<Chat /> } // Redirigez vers SignIn si l'utilisateur n'est pas connecté
-      />
+        <Route
+          path="/auth/signin"
+          element={
+            <SignIn
+              email={''}
+              password={''}
+              switchToSignUp={function (): void {
+                throw new Error('Function not implemented.');
+              }}
+            />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={<Chat />} // Redirigez vers SignIn si l'utilisateur n'est pas connecté
+        />
 
-      <Route
-         
+        <Route
           index
           element={
             <>
@@ -58,7 +65,7 @@ function App() {
             </>
           }
         />
-         <Route
+        <Route
           path="/voice"
           element={
             <>
@@ -90,9 +97,13 @@ function App() {
           element={
             <>
               <PageTitle title="Signin" />
-              <SignIn email={''} password={''} switchToSignUp={function (): void {
-                throw new Error('Function not implemented.');
-              } } />
+              <SignIn
+                email={''}
+                password={''}
+                switchToSignUp={function (): void {
+                  throw new Error('Function not implemented.');
+                }}
+              />
             </>
           }
         />
@@ -101,7 +112,6 @@ function App() {
           element={
             <>
               <PageTitle title="Signup" />
-              
             </>
           }
         />
@@ -116,7 +126,6 @@ function App() {
         />
         <Route path="/chatbot/files" element={<ChatbotFiles />} />
         <Route path="/chatbot/users/manage" element={<UserManage />} />
-
       </Routes>
     </>
   );

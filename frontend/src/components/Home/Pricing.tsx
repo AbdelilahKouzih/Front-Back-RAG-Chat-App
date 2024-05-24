@@ -32,7 +32,7 @@ function PricingCard({ title, desc, price, options }: PricingCardPropsType) {
       >
         <Typography
           variant="h6"
-          color="blue-gray"
+          color="white"
           className="capitalize font-bold mb-1"
         >
           {title}
@@ -245,7 +245,7 @@ export function PricingSection11() {
           >
             <div id="title" className="w-full py-5 border-b border-gray-800">
               <h2 className="font-bold text-3xl text-white">Startup</h2>
-              <h3 className="font-normal text-indigo-500 text-xl mt-2">
+              <h3 className="font-normal text-slate-500 text-indigo-500 text-xl mt-2">
                 $9<sup>,99</sup>/month
               </h3>
             </div>
@@ -291,7 +291,7 @@ export function PricingSection11() {
           >
             <div id="title" className="w-full py-5 border-b border-gray-800">
               <h2 className="font-bold text-3xl text-white">Corporate</h2>
-              <h3 className="font-normal text-indigo-500 text-xl mt-2">
+              <h3 className="font-normal text-slate-500 text-indigo-500 text-xl mt-2">
                 $12<sup>,99</sup>/month
               </h3>
             </div>
@@ -338,7 +338,7 @@ export function PricingSection11() {
           >
             <div id="title" className="w-full py-5 border-b border-gray-800">
               <h2 className="font-bold text-3xl text-white">Enterprise</h2>
-              <h3 className="font-normal text-indigo-500 text-xl mt-2">
+              <h3 className="font-normal text-slate-500 text-indigo-500 text-xl mt-2">
                 $19<sup>,99</sup>/month
               </h3>
             </div>

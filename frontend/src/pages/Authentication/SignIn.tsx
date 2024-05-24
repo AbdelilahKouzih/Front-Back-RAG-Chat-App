@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 interface SignInProps {
-  email: string;
-  password: string;
   switchToSignUp: () => void;
 }
 
@@ -13,9 +11,9 @@ const SignIn: React.FC<SignInProps> = (props) => {
     password: ''
   });
 
-  const [authenticated, setAuthenticated] = useState(false); // State to track authentication status
+  const [authenticated, setAuthenticated] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
-
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,8 +28,9 @@ const SignIn: React.FC<SignInProps> = (props) => {
       });
 
       if (response.ok) {
-        // Authenticated, redirect or perform necessary action
+        const data = await response.json();
         setAuthenticated(true);
+        setRole(data.role); // Set the role based on the server response
         console.log('User is authenticated');
       } else {
         const data = await response.json();
@@ -50,11 +49,13 @@ const SignIn: React.FC<SignInProps> = (props) => {
   };
 
   if (authenticated) {
-    // Redirect to the dashboard if authenticated
-    return <Navigate to="/dashboard" />;
-  }else{
-    
+    if (role === 'admin') {
+      return <Navigate to="/admin" />;
+    } else {
+      return <Navigate to="/dashboard" />;
+    }
   }
+
   return (
     <div className="w-full flex justify-center items-center h-screen">
       <div className="w-full flex items-center justify-center border-stroke dark:border-strokedark xl:w-1/2">
@@ -66,10 +67,10 @@ const SignIn: React.FC<SignInProps> = (props) => {
             Sign In to Chat Bot
           </h2>
           {errorMessage && (
-          <div className="mb-4 text-center text-red-500">
-            {errorMessage}
-          </div>
-        )}
+            <div className="mb-4 text-center text-red-500">
+              {errorMessage}
+            </div>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="relative">
@@ -114,7 +115,7 @@ const SignIn: React.FC<SignInProps> = (props) => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                   <g clipPath="url(#clip0_191_13499)">
+                  <g clipPath="url(#clip0_191_13499)">
                     <path
                       d="M19.999 10.2217C20.0111 9.53428 19.9387 8.84788 19.7834 8.17737H10.2031V11.8884H15.8266C15.7201 12.5391 15.4804 13.162 15.1219 13.7195C14.7634 14.2771 14.2935 14.7578 13.7405 15.1328L13.7209 15.2571L16.7502 17.5568L16.96 17.5774C18.8873 15.8329 19.9986 13.2661 19.9986 10.2217"
                       fill="#4285F4"
