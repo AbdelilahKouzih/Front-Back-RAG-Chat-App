@@ -24,7 +24,7 @@ const ChatBot: React.FC = () => {
       const urlRegex = /(https?:\/\/[^\s]+)/;
       const response = urlRegex.test(userInput)
         ? await axios.post('http://localhost:5000/api/search', { userInput })
-        : await axios.post('http://localhost:5000/api/chat', { userInput });
+        : await axios.post('http://localhost:5000/api/chatbot', { userInput });
 
       setChatHistory((prevHistory) => [
         ...prevHistory,

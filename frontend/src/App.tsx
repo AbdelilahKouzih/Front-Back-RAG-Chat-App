@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation ,Navigate} from 'react-router-dom';
+import { Route, Routes, useLocation} from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
 import Chat from './pages/Dashboard/Chat';
+import Admin from './pages/Admin/Admin';
+import ChatbotFiles from './pages/Admin/Chatbotfiles';
+import UserManage from './pages/Admin/UserManage';
 import Voice from './pages/Dashboard/VoiceAssistant';
-
 import DataVis from './pages/Dashboard/dataVis';
 import Home from './pages/Home/Home';
 import Profile from './pages/Profile';
@@ -104,6 +105,18 @@ function App() {
             </>
           }
         />
+        <Route
+          path="/admin"
+          element={
+            <>
+              <PageTitle title="Admin" />
+              <Admin />
+            </>
+          }
+        />
+        <Route path="/chatbot/files" element={<ChatbotFiles />} />
+        <Route path="/chatbot/users/manage" element={<UserManage />} />
+
       </Routes>
     </>
   );
