@@ -44,7 +44,7 @@ exports.loginUser = (req, res) => {
       }
 
       // Authentification réussie
-      res.status(200).json({ message: 'Connexion réussie.' });
+      res.status(200).json({ message: 'Connexion réussie.', role: results[0].role });
     });
   });
 };

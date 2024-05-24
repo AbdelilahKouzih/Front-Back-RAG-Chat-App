@@ -9,9 +9,24 @@ const connection = mysql.createConnection({
   database: 'chat-bot'
 });
 
+// Définissez la fonction de contrôleur pour supprimer tous les utilisateurs
+exports.deleteAllUsers = (req, res) => {
+  const sql = 'DELETE FROM users';
+
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.error('Erreur lors de la suppression de tous les utilisateurs dans la base de données :', err);
+      res.status(500).json({ error: 'Erreur serveur lors de la suppression de tous les utilisateurs.' });
+      return;
+    }
+
+    res.json({ message: 'Tous les utilisateurs ont été supprimés avec succès.' });
+  });
+};
+
 // Définissez la fonction de contrôleur pour ajouter un utilisateur
 exports.addUser = (req, res) => {
-  const { fullName, email, password,role } = req.body;
+  var { fullName, email, password,role } = req.body;
 
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
@@ -21,8 +36,12 @@ exports.addUser = (req, res) => {
     }
 
     const sql = 'INSERT INTO users (fullName, email, password, role) VALUES (?, ?, ?, ?)';
+    if(role == null){
+      role="user";
+    }
+
     const values = [fullName, email, hashedPassword,role];
-    
+
     connection.query(sql, values, (err, result) => {
       if (err) {
         console.error('Erreur lors de l\'enregistrement de l\'utilisateur dans la base de données :', err);
