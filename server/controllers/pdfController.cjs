@@ -3,7 +3,7 @@ const PDFExtract = require('pdf.js-extract').PDFExtract;
 const chroma = require("chromadb");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
-const openaiKey = 'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
+const openaiKey = 'sk-proj-sKVLGfhYqUxzP84s074ST3BlbkFJCQVAkZrBwgQWTwQsYRWf';
 const { OpenAI } = require("openai");
 const openai = new OpenAI({ apiKey: openaiKey });
 const {OpenAIEmbeddingFunction} = require('chromadb');
@@ -13,7 +13,13 @@ const privatePdfKey='secret_key_157219d5d388ff82a84a68c746b3598c_MJp1A8ae2c4e291
 const ILovePDFApi = require('@ilovepdf/ilovepdf-nodejs');
 const instance = new ILovePDFApi(publicPdfKey, privatePdfKey);
 const ILovePDFFile = require('@ilovepdf/ilovepdf-nodejs/ILovePDFFile');
+const groqApi ='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';
 let resresult = '';
+const Groq = require('groq-sdk');
+const groq = new Groq({
+  apiKey: groqApi
+});
+
 //const chunkit = require('./chunkit.cjs');
 async function importChunkit(text) {
   const { chunkit } = await import('semantic-chunking');
@@ -52,6 +58,7 @@ function generateRandomString(length) {
 }
 exports.uploadPDF = async (req, res) => {
   const { userInput, formData } = req.body;
+  let chatHistory = [];  // Initialize it as an empty array
 
   const convertToPDF = async (inputFilePath, outputFilePath) => {
     try {
@@ -215,10 +222,56 @@ fs.readdir(inputDir, async (err, files) => {
       documents.forEach(document => {
           textoContent += document + '\n';
       });
+
+
+    /*  const assistant = await openai.beta.assistants.create({
+        name: "Chat-Bot AI",
+        instructions:
+            "Chat-Bot AI est votre nom et vous êtes un compagnon intelligent conçu pour fournir des informations et des services liés à l'entreprise. Vous devez présenter les différentes informations et services offerts par l'entreprise aux utilisateurs du site web, répondre à leurs questions et les guider selon leurs besoins. Vous devez répondre aux questions des utilisateurs selon la langue dans laquelle la question est posée et en fonction des données existantes qui sont téléchargées.",
+        model: "gpt-3.5-turbo",
+        tools: [{ type: "file_search" }],
+    });*/
+    
       //console.log("chromadb response : == ",textoContent);
 
-     console.log("=======================");
-    let prompt = `Vous êtes un assistant pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question . Si vous ne connaissez pas la réponse, repondre selon vos connaisances. Question : ${userInput} Contexte : ${textoContent}`;
+      let prompt = ` Vous êtes un assistant avec le nom Chat-Bot AI pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question . Si il n y a pas de contexte , repondre selon vos connaisances.tu dois repondre par la meme langue que la question , Question : ${userInput} Contexte : ${textoContent}`;
+     /* 
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+        { role: 'system', content: 'Vous êtes un assistant avec le nom Chat-Bot AI pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question . Si il n y a pas de contexte , repondre selon vos connaisances.tu dois repondre avec la langue de  utilisateur ' },
+        { role: 'user', content: prompt }],
+        model: 'mixtral-8x7b-32768',
+      });
+    
+      console.log("Groooooooq",chatCompletion.choices[0].message.content);
+
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const result2 = await model.generateContentStream([prompt]);
+
+      const chat = model.startChat({
+        history: [
+          ...chatHistory.map(message => ({
+            role: message.role,
+            parts: [{ text: message.text }],
+          })),
+        ],
+        generationConfig: {
+          maxOutputTokens: 200,
+        },
+      });
+  
+
+      const msg = prompt;
+      const result4 = await chat.sendMessage(msg);
+      const response2 =  result4.response;
+      const text = response2.text();
+
+      chatHistory.push({ role: "user", text: msg });
+      chatHistory.push({ role: "model", text: text });
+      */
+     // res.json({ text: chatCompletion.choices[0].message.content});
+
+    console.log("=======================");
     console.log("response of open ai ================================= \n");
     async function main() {
       const completion = await openai.chat.completions.create({

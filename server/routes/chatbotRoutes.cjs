@@ -18,9 +18,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post('/chatbot/upload', upload.single('file'), chatbotController.uploadFile);
-router.get('/chatbot/files', chatbotController.getFiles);
-router.delete('/chatbot/files/:fileName', chatbotController.deleteFile);
-router.post('/chatbot', chatbotController.processChat);
+router.post('/upload', upload.single('file'), chatbotController.uploadFile);
+router.get('/files', chatbotController.getFiles);
+router.delete('/files/:fileName', chatbotController.deleteFile);
+router.post('/', chatbotController.processChat);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'chat-bot'; // Utilisez une clé secrète plus forte en production
 
 // Créez une connexion à la base de données MySQL
 const connection = mysql.createConnection({
@@ -38,13 +40,19 @@ exports.loginUser = (req, res) => {
       }
 
       if (!isMatch) {
+
         // Le mot de passe ne correspond pas
         res.status(401).json({ error: 'Adresse e-mail ou mot de passe incorrect.' });
         return;
       }
 
+
       // Authentification réussie
-      res.status(200).json({ message: 'Connexion réussie.', role: results[0].role });
+      const { id, role } = results[0]; // Récupérer l'id de l'utilisateur
+       // Créer un token JWT
+       const token = jwt.sign({ id, role }, SECRET_KEY, { expiresIn: '1h' });
+
+      res.status(200).json({ message: 'Connexion réussie.', token, user: { id, role } });
     });
   });
 };

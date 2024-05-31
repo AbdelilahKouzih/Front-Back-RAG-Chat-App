@@ -3,6 +3,6 @@ const router = express.Router();
 const searchController = require('../controllers/searchController.cjs');
 
 // Définissez la route POST pour gérer les interactions avec le chatbot
-router.post('/search', searchController.processSearch);
+router.post('/', searchController.processSearch);
 
 module.exports = router;

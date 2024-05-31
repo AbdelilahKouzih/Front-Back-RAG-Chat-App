@@ -5,6 +5,6 @@ const pdfController = require('../controllers/pdfController.cjs');
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/upload-pdf',pdfController.uploadPDF);
+router.post('/',pdfController.uploadPDF);
 
 module.exports = router;

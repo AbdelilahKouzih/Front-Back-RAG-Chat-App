@@ -6,9 +6,13 @@ const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter');
 const { MemoryVectorStore } = require('langchain/vectorstores/memory');
 const { OpenAIEmbeddings, ChatOpenAI } = require('@langchain/openai');
 const { RetrievalQAChain } = require('langchain/chains');
-
+const groqApi ='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';
+const Groq = require('groq-sdk');
+const groq = new Groq({
+  apiKey: groqApi
+});
 // Define your OpenAI API key
-const openaiApiKey = 'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
+const openaiApiKey = 'sk-proj-sKVLGfhYqUxzP84s074ST3BlbkFJCQVAkZrBwgQWTwQsYRWf';
 
 // Define the route handler function
 const processSearch = async (req, res) => {
@@ -56,6 +60,18 @@ const processSearch = async (req, res) => {
             splitsDocs = await textSplitter.splitDocuments(data);
         }
 
+        
+     /* let prompt = ` Question : ${userInput} Contexte : ${textoContent}`;
+      
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+        { role: 'system', content: 'Vous êtes un assistant avec le nom Chat-Bot AI pour les tâches de questions-réponses. Utilisez les éléments de contexte récupérés suivants pour répondre à la question . Si il n y a pas de contexte , repondre selon vos connaisances.tu dois repondre avec la langue de  utilisateur ' },
+        { role: 'user', content: prompt }],
+        model: 'mixtral-8x7b-32768',
+      });
+    
+      console.log("Groooooooq",chatCompletion.choices[0].message.content);
+*/
         // Initialize vector store
         const embedding = new OpenAIEmbeddings({ openAIApiKey: openaiApiKey });
         const vectorStore = await MemoryVectorStore.fromDocuments(

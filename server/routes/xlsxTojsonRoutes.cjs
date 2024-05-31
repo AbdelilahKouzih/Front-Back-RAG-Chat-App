@@ -4,6 +4,6 @@ const xlsxTojsonController = require("../controllers/xlsxTojsonController.cjs");
 const multer = require('multer');
 const upload = multer(); // Middleware de téléversement de fichiers
 
-router.post('/xlsxtojson', upload.single('xlsxFile'), xlsxTojsonController.convertXLSXToJson);
+router.post('/', upload.single('xlsxFile'), xlsxTojsonController.convertXLSXToJson);
 
 module.exports = router;
