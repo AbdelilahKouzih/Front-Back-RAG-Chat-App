@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState ,useContext} from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../images/logo/logo-bot.png';
+import { UserContext } from '../../components/UserContext'; // Importez le contexte
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -19,22 +20,27 @@ const Sidebar = ({
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
+  const { user } = useContext(UserContext)!; // Utilisez le contexte
+
+  const userId = user?.id; 
 
   const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
   );
+  const token = localStorage.getItem('token'); // Récupérer le token JWT du stockage local
 
   // Fonction de suppression d'un fichier de la liste
   const deleteFile = async (fileName: string) => {
     try {
       // Envoyer une demande de suppression au backend
       const response = await fetch(
-        `http://localhost:5000/api/files/${fileName}`,
+        `http://localhost:5000/api/files/${fileName}/${userId}`,
         {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
         },
       );
@@ -98,26 +104,27 @@ const Sidebar = ({
     return () => clearInterval(intervalId);
   }, []);
 
-  const fetchFiles = async () => {
+  const fetchFiles = async () => { // Ajoutez userId comme paramètre
     try {
-      const response = await fetch('http://localhost:5000/api/files', {
+      const response = await fetch(`http://localhost:5000/api/files?userId=${userId}`, { // Inclure l'identifiant de l'utilisateur dans l'URL
         method: 'GET', // Méthode GET pour récupérer les fichiers
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des fichiers');
       }
-
+  
       const data = await response.json();
       setFileList(data.files);
     } catch (error) {
       console.error('Erreur lors de la récupération des fichiers :', error);
     }
   };
-
+  
   return (
     <aside
       ref={sidebar}

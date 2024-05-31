@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import DefaultLayoutAdmin from '../../layout/DefaultLayoutAdmin';
+import { useLocation } from 'react-router-dom';
+import { UserContext } from '../../components/UserContext'; // Importez le contexte
 
 const ChatbotFiles = () => {
+  const { user } = useContext(UserContext)!; // Utilisez le contexte
+  const token = localStorage.getItem('token'); // Récupérer le token JWT du stockage local
+
+  const userId = user?.id; 
+  const location = useLocation();
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [fileList, setFileList] = useState<string[]>([]);
 
@@ -13,12 +21,14 @@ const ChatbotFiles = () => {
 
   const uploadFile = async () => {
     if (selectedFiles.length === 0) return;
-
     const formData = new FormData();
-    selectedFiles.forEach((file) => formData.append('file', file));
-
+    selectedFiles.forEach((file) => formData.append('pdfFiles', file));
+    formData.append('userId', userId ? userId.toString() : '');
     try {
-      const response = await fetch('http://localhost:5000/api/chatbot/upload', {
+      const response = await fetch('http://localhost:5000/api/upload1-pdf', {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+        },
         method: 'POST',
         body: formData,
       });
@@ -36,10 +46,11 @@ const ChatbotFiles = () => {
 
   const fetchFiles = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/chatbot/files', {
+      const response = await fetch(`http://localhost:5000/api/files?userId=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
         },
       });
 
@@ -54,14 +65,15 @@ const ChatbotFiles = () => {
     }
   };
 
-  const deleteFile = async (fileName: string) => {
+  const deleteFile = async (fileName: string, userId:number) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/chatbot/files/${fileName}`,
+        `http://localhost:5000/api/files/${fileName}/${userId}`,
         {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
           },
         },
       );
@@ -153,7 +165,7 @@ const ChatbotFiles = () => {
             >
               <span className="text-gray-700 font-semibold">{file}</span>
               <button
-                onClick={() => deleteFile(file)}
+                onClick={() => deleteFile(file, userId)}
                 className="inline-flex items-center px-4 py-2 ml-2 bg-red-500 text-white px-2 p-2 rounded hover:bg-red-600"
               >
                 <svg

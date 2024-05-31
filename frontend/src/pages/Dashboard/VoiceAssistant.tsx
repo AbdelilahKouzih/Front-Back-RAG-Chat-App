@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent,useContext } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,9 +8,10 @@ import {
 import { motion } from 'framer-motion';
 import { BsFileEarmarkArrowUp, BsPlayFill } from 'react-icons/bs';
 import DefaultLayout from '../../layout/DefaultLayout';
+import { useLocation } from 'react-router-dom';
+import { UserContext } from '../../components/UserContext'; // Importez le contexte
 
-const OPENAI_API_KEY =
-  'sk-proj-DpYl8J9hbphjvSgnNLRbT3BlbkFJRPNeuldMdAGbUwICBQn8';
+const OPENAI_API_KEY ='sk-proj-sKVLGfhYqUxzP84s074ST3BlbkFJCQVAkZrBwgQWTwQsYRWf';
 const OPENAI_API_URL = 'https://api.openai.com/v1/audio/speech';
 
 interface Message {
@@ -19,6 +20,7 @@ interface Message {
 }
 
 const Chat: React.FC = () => {
+  const location = useLocation();
   const [userInput, setUserInput] = useState<string>('');
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [isListening, setIsListening] = useState<boolean>(false);
@@ -28,6 +30,10 @@ const Chat: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
+  const { user } = useContext(UserContext)!; // Utilisez le contexte
+  const token = localStorage.getItem('token'); // Récupérer le token JWT du stockage local
+
+  const userId = user?.id; 
   const voices = [
     { name: 'Alloy', voice_id: 'alloy' },
     { name: 'Echo', voice_id: 'echo' },
@@ -112,9 +118,14 @@ const Chat: React.FC = () => {
     setUserInput('');
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', {
-        userInput: input,
-      });
+      const response = await axios.post(
+        'http://localhost:5000/api/chat', 
+        { userInput: input }, 
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+          },
+        });
 
       setChatHistory((prevHistory) => [
         ...prevHistory,
@@ -135,7 +146,6 @@ const Chat: React.FC = () => {
     }
   };
 
-
   const handleFileChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
     //handleFileChange(event);
     const files = event.target.files;
@@ -146,8 +156,12 @@ const Chat: React.FC = () => {
         formData.append('pdfFiles', file);
       });
 
-      axios
-        .post('http://localhost:5000/api/upload1-pdf', formData)
+      formData.append('userId', userId ? userId.toString() : '');
+      axios.post('http://localhost:5000/api/upload1-pdf', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+        },
+      })
         .then((response) => {
           console.log(response.data);
         })
@@ -281,7 +295,6 @@ const Chat: React.FC = () => {
             multiple
             onChange={handleFileChange2}
           />
-
         </div>
       </div>
     </DefaultLayout>

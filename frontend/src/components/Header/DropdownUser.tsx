@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState,useContext } from 'react';
+import { Link ,useNavigate } from 'react-router-dom';
+import { UserContext } from '../../components/UserContext'; // Importez le contexte
 
 import UserOne from '../../images/user/profil.png';
 
@@ -8,7 +9,10 @@ const DropdownUser = () => {
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
+  const { user ,setUser } = useContext(UserContext)!; // Utilisez le contexte
+  const navigate = useNavigate(); // Hook pour redirection
 
+  const userId = user?.id; 
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -34,6 +38,11 @@ const DropdownUser = () => {
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
   });
+
+  const handleLogout = () => {
+    setUser(null); // Réinitialiser le contexte utilisateur
+    navigate('/'); // Rediriger vers la page de connexion ou d'accueil
+  };
 
   return (
     <div className="relative">
@@ -107,9 +116,10 @@ const DropdownUser = () => {
             </Link>
           </li>
         </ul>
-        <Link
-              to="/">
-        <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+       
+        <button 
+        onClick={handleLogout}
+        className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
 
           <svg
             className="fill-current"
@@ -130,7 +140,7 @@ const DropdownUser = () => {
           </svg>
           Log Out
         </button>
-        </Link>
+       
       </div>
       {/* <!-- Dropdown End --> */}
     </div>

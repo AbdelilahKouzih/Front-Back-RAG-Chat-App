@@ -1,12 +1,13 @@
 import React, { useState, ReactNode } from 'react';
 import Header from '../components/Header/index';
 import Sidebar from '../components/Sidebar/indexAdmin';
+import 'animate.css'; // Import animate.css
 
 const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="dark:bg-boxdark-2 dark:text-bodydark">
+    <div className=" animate__animated animate__fadeIn animate__faster dark:bg-boxdark-2 dark:text-bodydark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}

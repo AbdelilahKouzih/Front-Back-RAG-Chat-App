@@ -631,3 +631,12 @@ span.flatpickr-weekday,
   }
 }
 
+.button-responsive {
+  
+}
+
+@media (max-width: 1020px) {
+  .button-responsive {
+    display: none;
+  }
+}

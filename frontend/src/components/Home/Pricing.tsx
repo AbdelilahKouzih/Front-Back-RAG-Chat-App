@@ -227,7 +227,7 @@ export function PricingSection11() {
   ];
 
   return (
-    <div className="antialiased w-full h-full bg-[#020617] text-gray-400 font-inter p-10">
+    <div id="pricing" className="antialiased w-[80%]   m-auto h-full bg-[#020617] text-gray-400 font-inter p-10">
     <div className="container px-4 mx-auto">
       <div>
         <div id="title" className="text-center my-10">
@@ -241,7 +241,7 @@ export function PricingSection11() {
         >
           <div
             id="plan"
-            className="rounded-lg border bg-[#1f1f2f] text-center overflow-hidden w-full transform hover:shadow-2xl hover:scale-105 transition duration-200 ease-in"
+            className="rounded-lg border bg-[#020617] text-center overflow-hidden w-full transform hover:shadow-2xl hover:scale-105 transition duration-200 ease-in"
           >
             <div id="title" className="w-full py-5 border-b border-gray-800">
               <h2 className="font-bold text-3xl text-white">Startup</h2>
@@ -253,7 +253,7 @@ export function PricingSection11() {
               <div id="icon" className="my-5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 mx-auto fill-stroke text-indigo-600"
+                  className="h-12 w-12 mx-auto fill-stroke text-[#0284c7]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -279,7 +279,7 @@ export function PricingSection11() {
                 <div id="choose" className="w-full mt-10 px-6">
                   <a
                     href="#"
-                    className="w-full block bg-[#020617] font-medium text-white text-xl py-4 rounded-xl hover:shadow-lg transition duration-200 ease-in-out hover:bg-indigo-100 hover:text-black"
+                    className="w-full block rounded-lg border font-medium text-gray-300 text-xl py-4 rounded-xl hover:shadow-lg transition duration-200 ease-in-out hover:bg-indigo-100 hover:text-black"
                     >Choose</a>
                 </div>
               </div>
@@ -287,7 +287,7 @@ export function PricingSection11() {
           </div>
           <div
             id="plan"
-            className="rounded-lg border bg-[#1f1f2f] text-center overflow-hidden w-full transform hover:shadow-2xl hover:scale-105 transition duration-200 ease-in"
+            className="rounded-lg border bg-[#020617] text-center overflow-hidden w-full transform hover:shadow-2xl hover:scale-105 transition duration-200 ease-in"
           >
             <div id="title" className="w-full py-5 border-b border-gray-800">
               <h2 className="font-bold text-3xl text-white">Corporate</h2>
@@ -299,7 +299,7 @@ export function PricingSection11() {
               <div id="icon" className="my-5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 mx-auto fill-stroke text-indigo-600"
+                  className="h-12 w-12 mx-auto fill-stroke text-[#0284c7]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -325,7 +325,7 @@ export function PricingSection11() {
                 <div id="choose" className="w-full mt-10 px-6">
                   <a
                     href="#"
-                    className="w-full block bg-[#020617] font-medium text-white text-xl py-4 rounded-xl hover:shadow-lg transition duration-200 ease-in-out hover:bg-indigo-100 hover:text-black"
+                    className="w-full block border border-gray-300 font-medium text-gray-300 text-xl py-4 rounded-xl hover:shadow-lg transition duration-200 ease-in-out hover:bg-indigo-100 hover:text-black"
                     >Choose</a
                   >
                 </div>
@@ -334,7 +334,7 @@ export function PricingSection11() {
           </div>
           <div
             id="plan"
-            className="rounded-lg border bg-[#1f1f2f] border-gray-800  text-center overflow-hidden w-full transform hover:shadow-2xl hover:scale-105 transition duration-200 ease-in"
+            className="rounded-lg border bg-[#020617] border-gray-800  text-center overflow-hidden w-full transform hover:shadow-2xl hover:scale-105 transition duration-200 ease-in"
           >
             <div id="title" className="w-full py-5 border-b border-gray-800">
               <h2 className="font-bold text-3xl text-white">Enterprise</h2>
@@ -346,7 +346,7 @@ export function PricingSection11() {
               <div id="icon" className="my-5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 mx-auto fill-stroke text-indigo-600"
+                  className="h-12 w-12 mx-auto fill-stroke text-[#0284c7]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -372,7 +372,7 @@ export function PricingSection11() {
                 <div id="choose" className="w-full mt-10 px-6">
                   <a
                     href="#"
-                    className="w-full block bg-[#020617] font-medium text-white text-xl py-4 rounded-xl hover:shadow-lg transition duration-200 ease-in-out hover:bg-indigo-100 hover:text-black"
+                    className="w-full block border border-gray-800  font-medium text-gray-300 text-xl py-4 rounded-xl hover:shadow-lg transition duration-100 ease-in-out hover:bg-indigo-100 hover:text-black"
                     >Choose</a>
                 </div>
               </div>

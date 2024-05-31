@@ -2,7 +2,8 @@ import Section from './Section.tsx';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import heroBackground from '../Home/assets/hero-background.jpg';
-import robot from '../Home/assets/robot.jpg';
+import robot from '../Home/assets/file.png';
+import 'animate.css'; // Import animate.css
 interface HeroProps {
   openSignInModal: () => void; // Define the prop type
 }
@@ -12,10 +13,11 @@ const Hero: React.FC<HeroProps> = ({ openSignInModal }) =>{
 
   return (
     <Section
-      className="pt-[17rem] -mt-[5.25rem]"
+    
+      className=" pt-[17rem] -mt-[5.25rem] rounded-xl  border shadow-lg w-[80%] m-auto animate__animated animate__fadeIn animate__slow "
       crosses
       customPaddings
-      id="hero"
+      id="Home"
     >
       <div className="relative ">
         <div className="container relative mx-auto">

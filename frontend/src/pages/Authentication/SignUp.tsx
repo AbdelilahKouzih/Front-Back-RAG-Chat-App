@@ -122,9 +122,9 @@ const SignUp: React.FC<SignUpProps> = (props) => {
   
   
   return (
-    <div className="w-full flex justify-center items-center h-screen">
+    <div className="w-full flex justify-center items-center h-screen animate__animated animate__fadeIn animate__faster ">
       <div className="w-full flex items-center justify-center border-stroke dark:border-strokedark xl:w-1/2">
-        <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+        <div className="w-full p-4 sm:p-12.5 xl:p-2.5">
         
           <span className="block text-center text-lg font-medium mb-4">
             Start for free

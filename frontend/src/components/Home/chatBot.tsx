@@ -10,6 +10,7 @@ import axios from 'axios';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import userSix from '../../images/user/Graident-Ai-Robot-1.png';
+import 'animate.css'; // Import animate.css
 
 const ChatBot: React.FC = () => {
   const [userInput, setUserInput] = useState('');
@@ -94,7 +95,7 @@ const ChatBot: React.FC = () => {
           }}
         >
           
-          <div className="fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 mb-4 bg-white rounded-lg border border-[#e5e7eb] w-[380px] h-[530px] flex flex-col">
+          <div className=" animate__animated animate__fadeIn animate__faster fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 mb-4 bg-white rounded-lg border border-[#e5e7eb] w-[380px] h-[530px] flex flex-col">
             <div className="bg-slate-900 text-white p-4 flex justify-between items-center rounded-t-lg">
               <div className="flex items-center space-x-2">
                 <h2 className="font-semibold text-lg">Chatbot</h2>
