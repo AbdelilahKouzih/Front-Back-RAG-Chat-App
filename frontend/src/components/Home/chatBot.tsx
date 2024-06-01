@@ -63,13 +63,18 @@ const ChatBot: React.FC = () => {
     setIsOpen(false);
     setChatHistory([]);
   };
-
   useEffect(() => {
+    if (isOpen && chatHistory.length === 0) {
+      setChatHistory([
+        { role: 'model', text: 'Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd\'hui ?' }
+      ]);
+    }
     const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  }, [chatHistory, isOpen]);
+  }, [isOpen, chatHistory.length]);
+  
 
   return (
     <>
@@ -117,9 +122,7 @@ const ChatBot: React.FC = () => {
             <div id="chat-container" className="flex-1 overflow-y-auto p-4">
             <div className="mb-4 flex flex-col items-center justify-center">
               <img src={userSix} className="rounded-full w-20 h-20" />
-              <h4 className="text-1xl font-medium  text-gray-800 mb-4">
-                How can I help you ?
-              </h4>
+
             </div>
               {chatHistory.map((message, index) => (
                 <div

@@ -26,12 +26,10 @@ export const chatbotServicesIcons = [
 
 const Services = () => {
   return (
-    <Section id="how-to-use" className=" animate__animated animate__fadeIn animate__slow w-[80%] m-auto">
-      <div className="container">
-        <h2 className="font-bold text-4xl text-white text-center mb-10">How It Works</h2>
-
-        <div className="relative">
-          <div className="relative z-1 flex items-center h-[39rem] mb-5 p-8 border border-gray-300 rounded-3xl overflow-hidden lg:p-20 xl:h-[46rem]">
+    <Section  className=" animate__animated animate__fadeIn animate__slow w-[80%] m-auto">
+      <div id="how-to-use" className="container">
+        <div  className="relative">
+          <div className="relative z-1 flex items-center h-[39rem] mb-5 p-8 border border-gray-300 rounded-3xl overflow-hidden lg:p-20 xl:h-[40rem]">
             <div className="absolute top-0 left-0  right-80 w-full h-full pointer-events-none md:w-3/5 xl:w-auto">
               <img
                 className="w-full h-full object-cover md:object-right"

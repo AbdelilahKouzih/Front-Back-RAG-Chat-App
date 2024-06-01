@@ -1,13 +1,109 @@
-import Section from './Section.tsx';
-import { useRef } from 'react';
+import Section from './Section';
+import { useRef, useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { Link } from 'react-router-dom';
 import heroBackground from '../Home/assets/hero-background.jpg';
 import robot from '../Home/assets/robot.jpg';
 import 'animate.css'; // Import animate.css
 
 const Contact: React.FC = () => {
+  const form = useRef<HTMLFormElement>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    tel: '',
+    message: '',
+  });
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    tel: '',
+    message: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const validate = () => {
+    const newErrors = {
+      name: '',
+      email: '',
+      tel: '',
+      message: '',
+    };
+    let isValid = true;
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Full Name is required';
+      isValid = false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+      newErrors.email = 'Valid Email is required';
+      isValid = false;
+    }
+
+    const telRegex = /^[+]?[0-9]{10,13}$/;
+    if (!formData.tel.trim() || !telRegex.test(formData.tel)) {
+      newErrors.tel = 'Valid Telephone Number is required';
+      isValid = false;
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const sendEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (validate() && form.current) {
+      emailjs
+        .sendForm('service_ajhpfxl', 'template_tfobjg1', form.current, {
+          publicKey: '2p1RO1AHF_r7rcXeb',
+        })
+        .then(
+          () => {
+            console.log('SUCCESS!');
+            resetForm(); // Reset form fields after successful email sending
+
+          },
+          (error) => {
+            console.log('FAILED...', error.text);
+          },
+        );
+    } else {
+      console.error('Form validation failed');
+    }
+  };
+
+  const initialFormData = {
+    name: '',
+    email: '',
+    tel: '',
+    message: '',
+  };
+
+  const resetForm = () => {
+    setFormData(initialFormData);
+  };
   return (
-    <div id="contact" className="animate__animated animate__fadeIn animate__slow relative flex items-top w-[80%] m-auto border shadow-lg rounded-xl mb-10 justify-center min-h-screen dark:bg-gray-900 sm:items-center sm:pt-0">
+    <div
+      id="contact"
+      className="animate__animated animate__fadeIn animate__slow relative flex flex-col items-top w-[80%] m-auto border shadow-lg rounded-xl mb-10 justify-center min-h-screen dark:bg-gray-900 sm:items-center sm:pt-0"
+    >
+      <h1 className="text-4xl sm:text-5xl text-gray-800 font-extrabold tracking-tight mb-10">
+        Contact Us
+      </h1>
       <div className="w-[80%] border shadow-lg rounded-xl mx-auto sm:px-6 lg:px-8">
         <div className="mt-8 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
@@ -92,7 +188,7 @@ const Contact: React.FC = () => {
               </div>
             </div>
 
-            <form className="p-6 flex flex-col justify-center">
+            <form className="p-6 flex flex-col justify-center" ref={form} onSubmit={sendEmail}>
               <div className="flex flex-col justify-center align-center">
                 <label htmlFor="name" className="hidden">
                   Full Name
@@ -102,8 +198,11 @@ const Contact: React.FC = () => {
                   name="name"
                   id="name"
                   placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
                   className="w-100 mt-2 py-3 px-3 rounded-lg bg-[#020617] dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-800 font-semibold focus:border-indigo-500 focus:outline-none"
                 />
+                {errors.name && <span className="text-red-500">{errors.name}</span>}
               </div>
 
               <div className="flex flex-col mt-2">
@@ -115,8 +214,11 @@ const Contact: React.FC = () => {
                   name="email"
                   id="email"
                   placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-100 mt-2 py-3 px-3 rounded-lg bg-[#020617] dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-800 font-semibold focus:border-indigo-500 focus:outline-none"
                 />
+                {errors.email && <span className="text-red-500">{errors.email}</span>}
               </div>
 
               <div className="flex flex-col mt-2">
@@ -128,8 +230,11 @@ const Contact: React.FC = () => {
                   name="tel"
                   id="tel"
                   placeholder="Telephone Number"
+                  value={formData.tel}
+                  onChange={handleChange}
                   className="w-100 mt-2 py-3 px-3 rounded-lg bg-[#020617] dark:bg-gray-800 border border-gray-400 dark:border-gray-700 text-gray-800 font-semibold focus:border-indigo-500 focus:outline-none"
                 />
+                {errors.tel && <span className="text-red-500">{errors.tel}</span>}
               </div>
 
               <div className="flex flex-col mt-2">
@@ -140,8 +245,11 @@ const Contact: React.FC = () => {
                   name="message"
                   id="message"
                   placeholder="Your Message"
+                  value={formData.message}
+                  onChange={handleChange}
                   className="w-100 h-32 mt-2 py-3 px-3 rounded-lg bg-[#020617] border border-gray-400 dark:border-gray-700 text-gray-800 font-semibold focus:border-indigo-500 focus:outline-none"
                 />
+                {errors.message && <span className="text-red-500">{errors.message}</span>}
               </div>
 
               <div className="flex justify-center">
