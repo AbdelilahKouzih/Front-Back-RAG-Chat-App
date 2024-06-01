@@ -216,7 +216,7 @@ app.use("/api/chat", verifyToken, chatRoutes);
 app.use("/api/upload-pdf", verifyToken, pdfRoutes); // Utilisez le fichier de routes pour les fichiers PDF
 app.use("/api/search", verifyToken, searchRoutes);
 app.use("/api/xlsxtojson", verifyToken, xlsxTojsonRoutes);
-app.use("/api/chatbot", verifyToken, chatbotRoutes); // Ajoutez cette ligne
+app.use("/api/chatbot", chatbotRoutes); // Ajoutez cette ligne
 
 const port = 5000;
 app.listen(port, () => {
