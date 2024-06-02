@@ -278,13 +278,13 @@ const Chat: React.FC = () => {
           />
           <button
             onClick={() => handleSubmit(userInput)}
-            className="p-4 bg-slate-500 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
+            className="p-4 bg-slate-700 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
           >
             <BsPlayFill className="text-2xl" />
           </button>
           <label
             htmlFor="file-upload"
-            className="p-4 bg-slate-500 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
+            className="p-4 bg-slate-700 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
           >
             <BsFileEarmarkArrowUp className="text-2xl" />
           </label>

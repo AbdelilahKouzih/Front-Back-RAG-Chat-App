@@ -1,26 +1,43 @@
-import React, { useState , useContext} from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { BsFileEarmarkArrowUp, BsPlayFill, BsTrash } from 'react-icons/bs';
 import { FiCopy } from 'react-icons/fi'; // Importer l'icône de copie
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import userSix from '../../images/user/Graident-Ai-Robot-1.png';
 import DefaultLayout from '../../layout/DefaultLayout';
-import axios from 'axios';
+import axios, { CancelTokenSource, CancelToken } from 'axios';
 import { useLocation } from 'react-router-dom';
 import 'animate.css'; // Import animate.css
 import { UserContext } from '../../components/UserContext'; // Importez le contexte
 
 const Chat: React.FC = () => {
   const [userInput, setUserInput] = useState('');
-  const [chatHistory, setChatHistory] = useState<
-    { role: string; text: string }[]
-  >([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false); // Nouvel état pour le chargement
   const { user } = useContext(UserContext)!; // Utilisez le contexte
   const token = localStorage.getItem('token'); // Récupérer le token JWT du stockage local
+  const [chatHistory, setChatHistory] = useState<
+    { role: string; text: string }[]
+  >([]);
+  const cancelTokenSource = useRef<CancelTokenSource | null>(null);
 
-  const userId = user?.id; 
+  const setSelectedChat = async (chatId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/chat/getChatHistorybyid/${chatId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      const chatHistory = response.data.chatHistory;
+      setChatHistory(chatHistory);
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+    }
+  };
+
+  const userId = user?.id;
   // Récupérer l'`user_id` transmis depuis le composant SignIn
   const handleInputChange = (event: {
     target: { value: React.SetStateAction<string> };
@@ -33,18 +50,22 @@ const Chat: React.FC = () => {
     setUserInput('');
     try {
       setLoading(true);
+      cancelTokenSource.current = axios.CancelToken.source(); // Créez le cancel token source
 
       // Check if the user input contains a URL
       const urlRegex = /(https?:\/\/[^\s]+)/;
       if (urlRegex.test(userInput)) {
         // If the user input contains a URL, launch the searchController
-        const response = await axios.post('http://localhost:5000/api/search', 
-        { userInput }, 
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
+        const response = await axios.post(
+          'http://localhost:5000/api/search',
+          { userInput },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cancelToken: cancelTokenSource.current.token, // Passez le cancel token
           },
-        });
+        );
         setChatHistory((prevHistory) => [
           ...prevHistory,
           { role: 'user', text: userInput },
@@ -52,13 +73,15 @@ const Chat: React.FC = () => {
         ]);
       } else {
         // If the user input does not contain a URL, launch the chatController
-        const response = await axios.post('http://localhost:5000/api/chat', 
-        { userInput }, 
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
+        const response = await axios.post(
+          'http://localhost:5000/api/chat',
+          { userInput },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
         //console.log(response.data.text);
 
         setChatHistory((prevHistory) => [
@@ -88,15 +111,16 @@ const Chat: React.FC = () => {
       Array.from(files).forEach((file) => {
         formData.append('pdfFiles', file);
       });
-  
+
       // Ajouter l'id de l'utilisateur à la FormData
       formData.append('userId', userId ? userId.toString() : '');
-      
-      axios.post('http://localhost:5000/api/upload1-pdf', formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
-        },
-      })
+
+      axios
+        .post('http://localhost:5000/api/upload1-pdf', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+          },
+        })
         .then((response) => {
           console.log(response.data);
         })
@@ -105,7 +129,6 @@ const Chat: React.FC = () => {
         });
     }
   };
-  
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -138,17 +161,37 @@ const Chat: React.FC = () => {
         });
     }
   };
-  const clearPageContent = () => {
-    setChatHistory([]); // Vous pouvez également vider d'autres états selon vos besoins
+  const clearPageContent = async () => {
+    try {
+      await axios.post(
+        'http://localhost:5000/api/chat/addChatHistory',
+        {
+          userId: userId,
+          chatContent: chatHistory,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      setChatHistory([]); // Vider l'état après avoir sauvegardé
+    } catch (error) {
+      console.error('Error saving chat history:', error);
+    }
+  };
+
+  const handleCancel = () => {
+    if (cancelTokenSource.current) {
+      cancelTokenSource.current.cancel('Request canceled by the user.');
+    }
   };
 
   return (
-    <DefaultLayout>
+    <DefaultLayout setSelectedChat={setSelectedChat}>
       <div className=" animate__animated animate__fadeIn animate__faster h-full flex flex-col  ">
         <div className="flex-1 ">
           <div className="bg-gray-100  p-6 rounded-lg shadow text-center">
             {/* Affichage de l'indicateur de chargement */}
-           
+
             <div className="mb-4 flex flex-col items-center justify-center">
               <img src={userSix} className="rounded-full w-40 h-40" />
               <h4 className="text-2xl font-bold text-gray-800 mb-4">
@@ -228,13 +271,13 @@ const Chat: React.FC = () => {
           />
           <button
             onClick={handleSubmit}
-            className="p-4 bg-slate-500 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
+            className="p-4 bg-slate-700 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
           >
             <BsPlayFill className="text-2xl" />
           </button>
           <label
             htmlFor="file-upload"
-            className="p-4 bg-slate-500 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
+            className="p-4 bg-slate-700 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
           >
             <BsFileEarmarkArrowUp className="text-2xl" />
           </label>
@@ -248,9 +291,15 @@ const Chat: React.FC = () => {
 
           <button
             onClick={clearPageContent}
-            className="p-4 bg-slate-500 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
+            className="p-4 bg-slate-700 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
           >
             <BsTrash className="text-2xl" />
+          </button>
+          <button
+            onClick={handleCancel}
+            className="p-4 bg-red-700 text-white rounded-lg ml-4 hover:bg-red-400 focus:outline-none"
+          >
+            Cancel
           </button>
         </div>
       </div>

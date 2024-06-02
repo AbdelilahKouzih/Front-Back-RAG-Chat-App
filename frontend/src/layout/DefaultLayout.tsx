@@ -2,15 +2,20 @@ import React, { useState, ReactNode } from 'react';
 import Header from '../components/Header/index';
 import Sidebar from '../components/Sidebar/index';
 import 'animate.css'; 
-const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
+
+interface DefaultLayoutProps {
+  children: ReactNode;
+  setSelectedChat: (chat: any[]) => void; // Ajoutez cette ligne
+}
+const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children, setSelectedChat }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className=" animate__animated animate__fadeIn animate__faster dark:bg-boxdark-2 dark:text-bodydark">
+    <div className=" animate__animated animate__faster dark:bg-boxdark-2 dark:text-bodydark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} selectedFiles={[]} />
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} selectedFiles={[]} onChatClick={setSelectedChat} />
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Start ===== --> */}
