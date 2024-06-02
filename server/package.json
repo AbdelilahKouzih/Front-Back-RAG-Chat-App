@@ -32,6 +32,7 @@
     "mammoth": "^1.7.2",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
+    "mysql2": "^3.10.0",
     "node-microphone": "^0.1.6",
     "node-record-lpcm16": "^1.0.1",
     "node-sox": "^1.0.0",
