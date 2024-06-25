@@ -1,24 +1,22 @@
 import React, { useState, useContext, useRef } from 'react';
 import { BsFileEarmarkArrowUp, BsPlayFill, BsTrash } from 'react-icons/bs';
-import { FiCopy } from 'react-icons/fi'; // Importer l'icône de copie
+import { FiCopy } from 'react-icons/fi'; // Import the copy icon
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import userSix from '../../images/user/Graident-Ai-Robot-1.png';
 import DefaultLayout from '../../layout/DefaultLayout';
-import axios, { CancelTokenSource, CancelToken } from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 import { useLocation } from 'react-router-dom';
 import 'animate.css'; // Import animate.css
-import { UserContext } from '../../components/UserContext'; // Importez le contexte
+import { UserContext } from '../../components/UserContext'; // Import the context
 
 const Chat: React.FC = () => {
   const [userInput, setUserInput] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false); // Nouvel état pour le chargement
-  const { user } = useContext(UserContext)!; // Utilisez le contexte
-  const token = localStorage.getItem('token'); // Récupérer le token JWT du stockage local
-  const [chatHistory, setChatHistory] = useState<
-    { role: string; text: string }[]
-  >([]);
+  const [loading, setLoading] = useState(false); // Loading state
+  const { user } = useContext(UserContext)!; // Use the context
+  const token = localStorage.getItem('token'); // Retrieve JWT token from local storage
+  const [chatHistory, setChatHistory] = useState<{ role: string; text: string }[]>([]);
   const cancelTokenSource = useRef<CancelTokenSource | null>(null);
 
   const setSelectedChat = async (chatId) => {
@@ -38,10 +36,8 @@ const Chat: React.FC = () => {
   };
 
   const userId = user?.id;
-  // Récupérer l'`user_id` transmis depuis le composant SignIn
-  const handleInputChange = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
+  // Retrieve the `user_id` passed from the SignIn component
+  const handleInputChange = (event) => {
     setUserInput(event.target.value);
   };
 
@@ -50,7 +46,7 @@ const Chat: React.FC = () => {
     setUserInput('');
     try {
       setLoading(true);
-      cancelTokenSource.current = axios.CancelToken.source(); // Créez le cancel token source
+      cancelTokenSource.current = axios.CancelToken.source(); // Create cancel token source
 
       // Check if the user input contains a URL
       const urlRegex = /(https?:\/\/[^\s]+)/;
@@ -63,7 +59,7 @@ const Chat: React.FC = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            cancelToken: cancelTokenSource.current.token, // Passez le cancel token
+            cancelToken: cancelTokenSource.current.token, // Pass the cancel token
           },
         );
         setChatHistory((prevHistory) => [
@@ -74,12 +70,13 @@ const Chat: React.FC = () => {
       } else {
         // If the user input does not contain a URL, launch the chatController
         const response = await axios.post(
-          'http://localhost:5000/api/chat',
+          'http://localhost:5000/api/chat',//upload-pdf
           { userInput },
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            cancelToken: cancelTokenSource.current.token, // Pass the cancel token
           },
         );
         //console.log(response.data.text);
@@ -112,20 +109,20 @@ const Chat: React.FC = () => {
         formData.append('pdfFiles', file);
       });
 
-      // Ajouter l'id de l'utilisateur à la FormData
+      // Add the user ID to the FormData
       formData.append('userId', userId ? userId.toString() : '');
 
       axios
         .post('http://localhost:5000/api/upload1-pdf', formData, {
           headers: {
-            Authorization: `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+            Authorization: `Bearer ${token}`, // Add the JWT token to the header
           },
         })
         .then((response) => {
           console.log(response.data);
         })
         .catch((error) => {
-          console.error('Erreur lors du téléversement :', error);
+          console.error('Error during upload:', error);
         });
     }
   };
@@ -157,7 +154,7 @@ const Chat: React.FC = () => {
           console.log(response.data);
         })
         .catch((error) => {
-          console.error('Erreur lors du téléversement :', error);
+          console.error('Error during upload:', error);
         });
     }
   };
@@ -173,7 +170,7 @@ const Chat: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      setChatHistory([]); // Vider l'état après avoir sauvegardé
+      setChatHistory([]); // Clear the state after saving
     } catch (error) {
       console.error('Error saving chat history:', error);
     }
@@ -190,8 +187,7 @@ const Chat: React.FC = () => {
       <div className=" animate__animated animate__fadeIn animate__faster h-full flex flex-col  ">
         <div className="flex-1 ">
           <div className="bg-gray-100  p-6 rounded-lg shadow text-center">
-            {/* Affichage de l'indicateur de chargement */}
-
+            {/* Loading indicator */}
             <div className="mb-4 flex flex-col items-center justify-center">
               <img src={userSix} className="rounded-full w-40 h-40" />
               <h4 className="text-2xl font-bold text-gray-800 mb-4">
@@ -220,7 +216,7 @@ const Chat: React.FC = () => {
                       <button
                         className="absolute top-0 right-0 p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
                         onClick={() => {
-                          // Copier le contenu du message
+                          // Copy message content
                           navigator.clipboard.writeText(message.text);
                         }}
                       >

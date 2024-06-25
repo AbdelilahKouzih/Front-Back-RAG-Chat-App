@@ -1,5 +1,5 @@
-import React, { useState, useEffect, ChangeEvent,useContext } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, ChangeEvent, useContext, useRef } from 'react';
+import axios, { CancelTokenSource } from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMicrophone,
@@ -9,9 +9,9 @@ import { motion } from 'framer-motion';
 import { BsFileEarmarkArrowUp, BsPlayFill } from 'react-icons/bs';
 import DefaultLayout from '../../layout/DefaultLayout';
 import { useLocation } from 'react-router-dom';
-import { UserContext } from '../../components/UserContext'; // Importez le contexte
+import { UserContext } from '../../components/UserContext';
 
-const OPENAI_API_KEY ='sk-proj-sKVLGfhYqUxzP84s074ST3BlbkFJCQVAkZrBwgQWTwQsYRWf';
+const OPENAI_API_KEY = 'sk-proj-sKVLGfhYqUxzP84s074ST3BlbkFJCQVAkZrBwgQWTwQsYRWf';
 const OPENAI_API_URL = 'https://api.openai.com/v1/audio/speech';
 
 interface Message {
@@ -26,14 +26,16 @@ const Chat: React.FC = () => {
   const [isListening, setIsListening] = useState<boolean>(false);
   const [speechRecognizer, setSpeechRecognizer] =
     useState<SpeechRecognition | null>(null);
-  const [selectedVoice, setSelectedVoice] = useState<string>('alloy'); // Défaut: 'alloy'
+  const [selectedVoice, setSelectedVoice] = useState<string>('alloy');
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const cancelTokenSource = useRef<CancelTokenSource | null>(null);
+  const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null);
 
-  const { user } = useContext(UserContext)!; // Utilisez le contexte
-  const token = localStorage.getItem('token'); // Récupérer le token JWT du stockage local
+  const { user } = useContext(UserContext)!;
+  const token = localStorage.getItem('token');
+  const userId = user?.id;
 
-  const userId = user?.id; 
   const voices = [
     { name: 'Alloy', voice_id: 'alloy' },
     { name: 'Echo', voice_id: 'echo' },
@@ -42,6 +44,7 @@ const Chat: React.FC = () => {
     { name: 'Nova', voice_id: 'nova' },
     { name: 'Shimmer', voice_id: 'shimmer' },
   ];
+
   useEffect(() => {
     if ('webkitSpeechRecognition' in window) {
       const recognizer = new (window.SpeechRecognition ||
@@ -80,6 +83,7 @@ const Chat: React.FC = () => {
       speechRecognizer.stop();
     }
   };
+
   const generateSpeech = async (text: string, selectedVoice: string) => {
     if (!text) return;
 
@@ -88,7 +92,7 @@ const Chat: React.FC = () => {
         OPENAI_API_URL,
         {
           model: 'tts-1',
-          voice: selectedVoice, // Utilisation de la voix sélectionnée ici
+          voice: selectedVoice,
           input: text,
         },
         {
@@ -97,12 +101,13 @@ const Chat: React.FC = () => {
             Authorization: `Bearer ${OPENAI_API_KEY}`,
           },
           responseType: 'arraybuffer',
-        },
+        }
       );
 
       const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
       const audioURL = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioURL);
+      setAudioInstance(audio); // Stocker l'instance audio
       audio.play();
     } catch (error) {
       console.error('Error generating speech:', error);
@@ -118,14 +123,17 @@ const Chat: React.FC = () => {
     setUserInput('');
     setLoading(true);
     try {
+      cancelTokenSource.current = axios.CancelToken.source();
       const response = await axios.post(
-        'http://localhost:5000/api/chat', 
-        { userInput: input }, 
+        'http://localhost:5000/api/chat',
+        { userInput: input },
         {
           headers: {
-            'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+            'Authorization': `Bearer ${token}`,
           },
-        });
+          cancelToken: cancelTokenSource.current.token,
+        }
+      );
 
       setChatHistory((prevHistory) => [
         ...prevHistory,
@@ -146,8 +154,19 @@ const Chat: React.FC = () => {
     }
   };
 
+  const handleCancel = () => {
+    if (cancelTokenSource.current) {
+      cancelTokenSource.current.cancel('Request canceled by the user.');
+    }
+
+    if (audioInstance) {
+      audioInstance.pause();
+      audioInstance.currentTime = 0;
+      setAudioInstance(null);
+    }
+  };
+
   const handleFileChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //handleFileChange(event);
     const files = event.target.files;
     if (files) {
       setSelectedFiles(Array.from(files));
@@ -159,7 +178,7 @@ const Chat: React.FC = () => {
       formData.append('userId', userId ? userId.toString() : '');
       axios.post('http://localhost:5000/api/upload1-pdf', formData, {
         headers: {
-          'Authorization': `Bearer ${token}`, // Ajouter le token JWT à l'en-tête
+          'Authorization': `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -226,7 +245,7 @@ const Chat: React.FC = () => {
                   </label>
                 </div>
               </div>
-              <div className="relative group rounded-lg w-64 bg-gray-50 overflow-hidden before:absolute before:w-12 before:h-12  ">
+              <div className="relative group rounded-lg w-64 bg-gray-50 overflow-hidden before:absolute before:w-12 before:h-12">
                 <svg
                   y="0"
                   xmlns="http://www.w3.org/2000/svg"
@@ -249,7 +268,7 @@ const Chat: React.FC = () => {
                 <select
                   value={selectedVoice}
                   onChange={(e) => setSelectedVoice(e.target.value)}
-                  className="appearance-none  relative text-slate-400 bg-transparent ring-0 outline-none border border-white-500 text-neutral-900 text-sm font-bold rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5"
+                  className="appearance-none relative text-slate-400 bg-transparent ring-0 outline-none border border-white-500 text-neutral-900 text-sm font-bold rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full p-2.5"
                 >
                   {voices.map((voice) => (
                     <option key={voice.voice_id} value={voice.voice_id}>
@@ -282,6 +301,7 @@ const Chat: React.FC = () => {
           >
             <BsPlayFill className="text-2xl" />
           </button>
+          
           <label
             htmlFor="file-upload"
             className="p-4 bg-slate-700 text-white rounded-lg ml-4 hover:bg-slate-400 focus:outline-none"
@@ -295,6 +315,12 @@ const Chat: React.FC = () => {
             multiple
             onChange={handleFileChange2}
           />
+          <button
+            onClick={handleCancel}
+            className="p-4 bg-red-700 text-white rounded-lg ml-4 hover:bg-red-400 focus:outline-none"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </DefaultLayout>
