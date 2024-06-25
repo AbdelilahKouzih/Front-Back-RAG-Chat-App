@@ -54,6 +54,24 @@ exports.addUser = (req, res) => {
   });
 };
 
+
+exports.fetchUserDetails = (req, res) => {
+  const userId = req.userId;
+
+  const query = 'SELECT fullname, image FROM users WHERE id = ?';
+  connection.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error('Error fetching user details:', err);
+      return res.status(500).json({ error: 'Failed to fetch user details' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(result[0]);
+  });
+};
+
+
 // Définissez la fonction de contrôleur pour obtenir tous les utilisateurs
 exports.getAllUsers = (req, res) => {
   const sql = 'SELECT * FROM users';
